@@ -19,7 +19,7 @@ const sequelize = new Sequelize({
 module.exports = sequelize;
 
 // Define the Tickets model
-const Ticket = sequelize.define('Tickets', {
+const Ticket = sequelize.define('Ticket', {
   ticketId: {
     type: DataTypes.INTEGER,
     primaryKey: true,

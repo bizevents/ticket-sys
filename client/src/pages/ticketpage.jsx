@@ -33,7 +33,7 @@ const TicketGrid = () => {
     setTicketCount(count);
 
     axios
-      .get(`https://ticket-sys-client.vercel.app/api/tickets?sessionId=${sessionId}`)
+      .get(`https://ticket-sys-client.vercel.app/api/Tickets?sessionId=${sessionId}`)
       .then((response) => {
         setTickets(response.data);
         setLoading(false);
@@ -72,7 +72,7 @@ const TicketGrid = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://ticket-sys-server.vercel.app/api/tickets/reserve', {
+      const response = await axios.post('https://ticket-sys-server.vercel.app/api/Tickets/reserve', {
         ticketIds: selectedTickets,
         ...formData,
       });

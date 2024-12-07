@@ -56,7 +56,7 @@ const checkLinkValidity = async (req, res, next) => {
 /**
  * Generate a unique session-based link for tickets
  */
-app.post("/api/tickets/generate", async (req, res) => {
+app.post("/api/Tickets/generate", async (req, res) => {
   const { ticketCount } = req.body;
 
   if (!ticketCount || ticketCount <= 0) {
@@ -81,7 +81,7 @@ app.post("/api/tickets/generate", async (req, res) => {
 /**
  * Fetch available tickets
  */
-app.get('/api/tickets', async (req, res) => {
+app.get('/api/Tickets', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM Tickets WHERE available = TRUE');
 
@@ -99,7 +99,7 @@ app.get('/api/tickets', async (req, res) => {
 /**
  * Reserve tickets
  */
-app.post('/api/tickets/reserve', checkLinkValidity, async (req, res) => {
+app.post('/api/Tickets/reserve', checkLinkValidity, async (req, res) => {
   const { sessionId, ticketIds, firstName, lastName, email, phoneNumber } = req.body;
 
   try {
@@ -143,7 +143,7 @@ app.post('/api/tickets/reserve', checkLinkValidity, async (req, res) => {
 /**
  * Fetch reserved tickets
  */
-app.get('/api/tickets/reserved', async (req, res) => {
+app.get('/api/Tickets/reserved', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM Tickets WHERE available = FALSE');
 
