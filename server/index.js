@@ -2,12 +2,18 @@ const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
 const db = require('./db/db');
-const Ticket = require('./models/Ticket'); // Ensure the correct path to your Ticket model file
+const { DataTypes } = require("sequelize"); // Ensure DataTypes is imported
+const Ticket = require('./models/Ticket'); 
 
 const app = express();
 
 // Middleware for cross-origin requests
-app.use(cors());
+const corsOptions = {
+  origin: "https://ticket-sys-client.vercel.app", // replace with your actual client URL
+  methods: "GET,POST",
+  allowedHeaders: "Content-Type,Authorization",
+};
+app.use(cors(corsOptions));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -21,7 +27,7 @@ const checkLinkValidity = async (req, res, next) => {
   try {
     const [link] = await db.query('SELECT * FROM links WHERE sessionId = ?', [sessionId]);
 
-    if (!link || link.used || link.expiresAt < new Date()) {
+    if (!link || link.used || new Date(link.expiresAt) < new Date()) {
       return res.status(404).json({ message: 'This link is invalid or has expired.' });
     }
 
@@ -120,35 +126,6 @@ app.post('/api/tickets/reserve', checkLinkValidity, async (req, res) => {
 });
 
 /**
- * Validate tickets (optional endpoint)
- */
-app.post('/api/tickets/validate', async (req, res) => {
-  const { ticketIds } = req.body;
-
-  try {
-    const tickets = await Ticket.findAll({
-      where: {
-        ticketId: ticketIds,
-      },
-    });
-
-    const reservedTickets = tickets.filter((ticket) => !ticket.available);
-
-    if (reservedTickets.length > 0) {
-      return res.status(400).json({
-        message: 'Some tickets are no longer available.',
-        reservedTickets: reservedTickets.map((ticket) => ticket.ticketNumber),
-      });
-    }
-
-    res.json({ message: 'All tickets are still available.' });
-  } catch (error) {
-    console.error('Error validating tickets:', error);
-    res.status(500).json({ message: 'Error validating tickets.' });
-  }
-});
-
-/**
  * Fetch reserved tickets
  */
 app.get('/api/tickets/reserved', async (req, res) => {
@@ -166,9 +143,7 @@ app.get('/api/tickets/reserved', async (req, res) => {
   }
 });
 
-/**
- * Handle 404 errors for undefined routes
- */
+// Handle 404 errors for undefined routes
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
