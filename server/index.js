@@ -1,5 +1,4 @@
 const express = require("express");
-const cors = require("cors");
 const crypto = require("crypto");
 const db = require('./db/db');
 const { Ticket } = require('./models/Ticket'); // Ensure Ticket is imported from Sequelize model
@@ -20,26 +19,6 @@ app.use(cors(corsOptions));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
-
-/**
- * Middleware to validate session links
- */
-const checkLinkValidity = async (req, res, next) => {
-  const { sessionId } = req.query;
-
-  try {
-    const [link] = await db.query('SELECT * FROM links WHERE sessionId = ?', [sessionId]);
-
-    if (!link || link.used || new Date(link.expiresAt) < new Date()) {
-      return res.status(404).json({ message: 'This link is invalid or has expired.' });
-    }
-
-    next(); // Proceed if link is valid
-  } catch (err) {
-    console.error('Error validating link:', err);
-    res.status(500).json({ message: 'Server error.' });
-  }
-};
 
 /**
  * Generate a unique session-based link for tickets
@@ -92,7 +71,7 @@ app.get('/api/tickets', async (req, res) => {
 /**
  * Reserve tickets
  */
-app.post('/api/tickets/reserve', checkLinkValidity, async (req, res) => {
+app.post('/api/tickets/reserve', async (req, res) => {
   const { sessionId, ticketIds, firstName, lastName, email, phoneNumber } = req.body;
 
   try {
