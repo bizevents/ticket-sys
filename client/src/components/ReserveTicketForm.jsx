@@ -22,7 +22,7 @@ const ReserveTicketForm = ({ ticket, onReservationSuccess }) => {
 
     // Send reservation request to backend
     axios
-      .post('https://ticket-sys-server.vercel.app/api/tickets/reserve', {
+      .post('https://ticket-sys-server.vercel.app/api/Tickets/reserve', {
         ticketIds: [ticket.ticketId],
         name,
         phoneNumber,
