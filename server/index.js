@@ -2,23 +2,28 @@ const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
 const db = require('./db/db');
-const { DataTypes } = require("sequelize"); // Ensure DataTypes is imported
-const Ticket = require('./models/Ticket');
+const { Ticket } = require('./models/Ticket'); // Ensure Ticket is imported from Sequelize model
 
 const app = express();
 
 // Middleware for cross-origin requests
 const corsOptions = {
-  origin: ["https://ticket-sys-client.vercel.app", "http://localhost:3000"], // Add both your production and local dev URLs
+  origin: [
+    "https://ticket-sys-client.vercel.app",  // Production frontend URL
+    "http://localhost:3000"                 // Local development URL
+  ],
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Ensure credentials (cookies) are included if necessary
+  credentials: true, // Ensures cookies or credentials can be sent
 };
 app.use(cors(corsOptions));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+/**
+ * Middleware to validate session links
+ */
 const checkLinkValidity = async (req, res, next) => {
   const { sessionId } = req.query;
 
@@ -51,14 +56,19 @@ app.post("/api/tickets/generate", async (req, res) => {
   // Set link expiration to 1 hour from now
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-  await db.query(
-    'INSERT INTO links (sessionId, ticketCount, expiresAt) VALUES (?, ?, ?)',
-    [sessionId, ticketCount, expiresAt]
-  );
+  try {
+    await db.query(
+      'INSERT INTO links (sessionId, ticketCount, expiresAt) VALUES (?, ?, ?)',
+      [sessionId, ticketCount, expiresAt]
+    );
 
-  const uniqueLink = `https://ticket-sys-client.vercel.app/tickets?sessionId=${sessionId}&ticketCount=${ticketCount}`;
+    const uniqueLink = `https://ticket-sys-client.vercel.app/tickets?sessionId=${sessionId}&ticketCount=${ticketCount}`;
 
-  res.json({ url: uniqueLink });
+    res.json({ url: uniqueLink });
+  } catch (error) {
+    console.error("Error generating link:", error);
+    res.status(500).json({ message: "Server error." });
+  }
 });
 
 /**
@@ -74,7 +84,7 @@ app.get('/api/tickets', async (req, res) => {
 
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching available tickets:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -136,7 +146,7 @@ app.get('/api/tickets/reserved', async (req, res) => {
 
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching reserved tickets:', err);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -147,7 +157,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const port = process.env.PORT
+const port = process.env.PORT || 5000;  // Default to port 5000 if not specified
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
