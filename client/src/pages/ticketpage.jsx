@@ -33,7 +33,7 @@ const TicketGrid = () => {
     setTicketCount(count);
 
     axios
-      .get(`https://ticket-sys-server.vercel.app/api/tickets?sessionId=${sessionId}`)
+      .get(`https://ticket-sys-client.vercel.app/api/tickets?sessionId=${sessionId}`)
       .then((response) => {
         setTickets(response.data);
         setLoading(false);
