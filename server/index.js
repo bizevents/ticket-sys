@@ -1,6 +1,7 @@
 const express = require("express");
 const crypto = require("crypto");
 const db = require('./db/db');
+const cors = require("cors");
 const { Ticket } = require('./models/Ticket'); // Ensure Ticket is imported from Sequelize model
 
 const app = express();
