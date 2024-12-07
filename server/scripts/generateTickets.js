@@ -1,6 +1,16 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = new Sequelize('mysql://slow:Uhgirlu2l8!@localhost:3306/ticketdb'); // Replace with your credentials
-
+const sequelize = new Sequelize({
+  dialect: 'mysql',
+  host: 'bizbazevents-bizbazevents-03a7.l.aivencloud.com', // Replace with your Aiven MySQL host
+  port: 27994 , // Replace with the correct port if it's different
+  username: 'avnadmin', // Replace with your Aiven database username
+  password: 'AVNS_tIapblDP65gM2SIOmds', // Replace with your Aiven database password
+  database: 'defaultdb', // Replace with your Aiven database name
+  dialectOptions: {
+    connectTimeout: 10000, // Optional: Adjust the connection timeout (in milliseconds)
+  },
+  logging: false, // Optional: Set to true to log SQL queries
+});
 // Import the Ticket model here
 const Ticket = require('../models/Ticket'); 
 
