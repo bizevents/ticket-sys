@@ -7,7 +7,7 @@ const ReservedTickets = () => {
 
   useEffect(() => {
     // Fetch the reserved tickets from the backend
-    axios.get('http://localhost:5000/api/tickets/reserved')
+    axios.get('https://ticket-sys-server.vercel.app/api/tickets/reserved')
       .then((response) => {
         setReservedTickets(response.data);  // Directly set the response data
         setLoading(false);
