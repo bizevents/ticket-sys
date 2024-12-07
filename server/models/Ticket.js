@@ -1,7 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 require('dotenv').config();
  // Load environment variables from .env file
-const { Sequelize } = require('sequelize');
 
 // Aiven MySQL connection details
 const sequelize = new Sequelize({
