@@ -3,15 +3,16 @@ const cors = require("cors");
 const crypto = require("crypto");
 const db = require('./db/db');
 const { DataTypes } = require("sequelize"); // Ensure DataTypes is imported
-const Ticket = require('./models/Ticket'); 
+const Ticket = require('./models/Ticket');
 
 const app = express();
 
 // Middleware for cross-origin requests
 const corsOptions = {
-  origin: "https://ticket-sys-client.vercel.app", // replace with your actual client URL
-  methods: "GET,POST",
-  allowedHeaders: "Content-Type,Authorization",
+  origin: ["https://ticket-sys-client.vercel.app", "http://localhost:3000"], // Add both your production and local dev URLs
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // Ensure credentials (cookies) are included if necessary
 };
 app.use(cors(corsOptions));
 
