@@ -52,7 +52,7 @@ app.post("/api/tickets/generate", async (req, res) => {
     [sessionId, ticketCount, expiresAt]
   );
 
-  const uniqueLink = `http://localhost:3000/tickets?sessionId=${sessionId}&ticketCount=${ticketCount}`;
+  const uniqueLink = `https://ticket-sys-client.vercel.app/tickets?sessionId=${sessionId}&ticketCount=${ticketCount}`;
 
   res.json({ url: uniqueLink });
 });
