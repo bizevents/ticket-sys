@@ -19,7 +19,26 @@ app.use(cors(corsOptions));
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+const checkLinkValidity = async (req, res, next) => {
+  const { sessionId } = req.query;
 
+  try {
+    const [link] = await db.query('SELECT * FROM links WHERE sessionId = ?', [sessionId]);
+
+    if (!link || link.used || new Date(link.expiresAt) < new Date()) {
+      return res.status(404).json({ message: 'This link is invalid or has expired.' });
+    }
+
+    next(); // Proceed if link is valid
+  } catch (err) {
+    console.error('Error validating link:', err);
+    res.status(500).json({ message: 'Server error.' });
+  }
+};
+
+/**
+ * Generate a unique session-based link for tickets
+ */
 app.post("/api/tickets/generate", async (req, res) => {
   const { ticketCount } = req.body;
 
@@ -112,7 +131,7 @@ app.get('/api/tickets/reserved', async (req, res) => {
     const [rows] = await db.query('SELECT * FROM Tickets WHERE available = FALSE');
 
     if (rows.length === 0) {
-      return res.status(404).json({ message: 'No reserved tickets found' });
+      return res.status(404).json({ message: 'No reserved Tickets found' });
     }
 
     res.json(rows);
@@ -128,7 +147,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
