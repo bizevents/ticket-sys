@@ -7,7 +7,7 @@ const AdminPanel = () => {
 
   const handleSearchTicket = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/ticket-details/${ticketId}`);
+      const response = await axios.get(`https://ticket-sys-server.vercel.app//ticket-details/${ticketId}`);
       setTicketDetails(response.data);
     } catch (error) {
       alert("Ticket not found");

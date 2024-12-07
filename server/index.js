@@ -8,13 +8,30 @@ const Ticket = require('./models/Ticket');
 const app = express();
 
 // Middleware for cross-origin requests
-const corsOptions = {
-  origin: ["https://ticket-sys-client.vercel.app", "http://localhost:3000"], // Add both your production and local dev URLs
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true, // Ensure credentials (cookies) are included if necessary
-};
-app.use(cors(corsOptions));
+const allowCors = fn => async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', true)
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  // another common pattern
+  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
+  res.setHeader(
+    'Access-Control-Allow-Headers',
+    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
+  )
+  if (req.method === 'OPTIONS') {
+    res.status(200).end()
+    return
+  }
+  return await fn(req, res)
+}
+
+const handler = (req, res) => {
+  const d = new Date()
+  res.end(d.toString())
+}
+
+module.exports = allowCors(handler)
+
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -56,7 +73,7 @@ app.post("/api/tickets/generate", async (req, res) => {
     [sessionId, ticketCount, expiresAt]
   );
 
-  const uniqueLink = `https://ticket-sys-client.vercel.app/tickets?sessionId=${sessionId}&ticketCount=${ticketCount}`;
+  const uniqueLink = `https://ticket-sys-client.vercel.app/ticket?sessionId=${uniqueId}&ticketCount=${ticketCount}`;
 
   res.json({ url: uniqueLink });
 });
@@ -147,7 +164,7 @@ app.use((req, res) => {
 });
 
 // Start the server
-const port = process.env.PORT
+const port = process.env.PORT || 5000
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
