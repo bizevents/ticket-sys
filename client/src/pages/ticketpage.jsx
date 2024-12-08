@@ -19,7 +19,7 @@ const TicketGrid = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get("https://ticket-sys-server.vercel.app/api/Tickets");
+        const response = await axios.get("https://ticket-sys-server.vercel.app/api/tickets");
         console.log(response); // Log the full response
     
         if (response.data.message) {
@@ -65,7 +65,7 @@ const TicketGrid = () => {
 
     try {
       const response = await axios.post(
-        "https://ticket-sys-server.vercel.app/api/Tickets/reserve",
+        "https://ticket-sys-server.vercel.app/api/tickets/reserve",
         {
           ticketIds: selectedTickets,
           ...formData,

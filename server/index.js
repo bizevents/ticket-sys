@@ -39,7 +39,7 @@ app.use(express.json());
 /**
  * Generate a unique session-based link for tickets
  */
-app.post("/api/Tickets/generate", async (req, res) => {
+app.post("/api/tickets/generate", async (req, res) => {
   const { ticketCount } = req.body;
 
   
@@ -64,7 +64,7 @@ app.post("/api/Tickets/generate", async (req, res) => {
 /**
  * Fetch available tickets
  */
-app.get('/api/Tickets', async (req, res) => {
+app.get('/api/tickets', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM Tickets WHERE available = TRUE');
 
@@ -82,7 +82,7 @@ app.get('/api/Tickets', async (req, res) => {
 /**
  * Reserve tickets
  */
-app.post('/api/Tickets/reserve', async (req, res) => {
+app.post('/api/tickets/reserve', async (req, res) => {
   const { sessionId, ticketIds, firstName, lastName, email, phoneNumber } = req.body;
 
   try {
@@ -149,7 +149,7 @@ app.post('/api/tickets/validate', async (req, res) => {
     res.status(500).json({ message: 'Error validating tickets.' });
   }
 });
-app.get('/api/Tickets/reserved', async (req, res) => {
+app.get('/api/tickets/reserved', async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM Tickets WHERE available = FALSE');
 
