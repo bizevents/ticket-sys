@@ -19,7 +19,8 @@ const TicketSystem = () => {
     }
 
     // Generate unique session link with ticketCount as a query parameter
-    const url = `https://ticket-sys-client.vercel.app/Tickets`;
+    const uniqueId = Date.now(); // Example unique identifier
+    const url = `https://ticket-sys-client.vercel.app/Tickets?sessionId=${uniqueId}&ticketCount=${ticketCount}`;
 
     // Set the URL to state or redirect to the new page
     setUniqueLink(url); // For QR code
