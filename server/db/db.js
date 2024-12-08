@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize');
-import mysql2 from 'mysql2'
+i
 
 // Create a new Sequelize instance
 const sequelize = new Sequelize({
