@@ -19,21 +19,24 @@ const TicketGrid = () => {
   useEffect(() => {
     const fetchTickets = async () => {
       try {
-        const response = await axios.get(
-          "https://ticket-sys-server.vercel.app/api/Tickets"
-        );
-        if (Array.isArray(response.data)) {
+        const response = await axios.get("https://ticket-sys-server.vercel.app/api/Tickets");
+        console.log(response); // Log the full response
+    
+        if (response.data.message) {
+          // If there's a message (like no tickets found)
+          setErrorMessage(response.data.message);
+        } else if (Array.isArray(response.data)) {
           setTickets(response.data);
         } else {
           setErrorMessage("Invalid data format received from server.");
         }
       } catch (error) {
         console.error("Error fetching tickets:", error);
-        setErrorMessage("Failed to fetch tickets. Please try again.");
+        setErrorMessage(`Error: ${error.message}`);
       } finally {
         setLoading(false);
       }
-    };
+    };    
 
     fetchTickets();
   }, []);
