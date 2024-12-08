@@ -163,6 +163,9 @@ app.get('/api/tickets/reserved', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ message: 'Server is running smoothly' });
+});
 
 
 
@@ -170,9 +173,7 @@ app.get('/api/tickets/reserved', async (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ message: 'Server is running smoothly' });
-});
+
 
 // Start the server
 const port = process.env.PORT || 5000
