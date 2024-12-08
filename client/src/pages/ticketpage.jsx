@@ -4,7 +4,7 @@ import axios from 'axios';
 import './ticketgrid.css';
 
 const TicketGrid = () => {
-  const [tickets, setTickets] = useState([]); // Ensure it's an array
+  const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [ticketCount, setTicketCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -15,8 +15,8 @@ const TicketGrid = () => {
     email: '',
     phoneNumber: '',
   });
-  const [loading, setLoading] = useState(true); // For loading state
-  const [invalidSession, setInvalidSession] = useState(false); // Handle invalid session
+  const [loading, setLoading] = useState(true);
+  const [invalidSession, setInvalidSession] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -32,19 +32,22 @@ const TicketGrid = () => {
 
     setTicketCount(count);
 
+    const url = `https://ticket-sys-server.vercel.app/api/Tickets?sessionId=${sessionId}`;
+    console.log('Fetching tickets from:', url);
+
     axios
-      .get(`https://ticket-sys-client.vercel.app/api/Tickets?sessionId=${sessionId}`)
+      .get(url)
       .then((response) => {
-        console.log('API response:', response.data); // Debug log
         if (Array.isArray(response.data)) {
-          setTickets(response.data); // Safeguard for array data
+          setTickets(response.data);
         } else {
           console.error('Invalid data format:', response.data);
-          setTickets([]); // Fallback to empty array
+          setErrorMessage('Invalid data format received from server.');
         }
         setLoading(false);
       })
       .catch((error) => {
+        console.error('API request error:', error.message);
         if (error.response && error.response.status === 404) {
           setErrorMessage('This link is invalid or has expired.');
         } else {
@@ -130,34 +133,27 @@ const TicketGrid = () => {
     <div className="ticket-grid">
       <h1>Available Tickets</h1>
       <div className="tickets">
-        {Array.isArray(tickets) && tickets.length > 0 ? (
-          tickets.map((ticket) => (
-            <div
-              key={ticket.ticketId}
-              className={`ticket ${selectedTickets.includes(ticket.ticketId) ? 'selected' : ''}`}
-              onClick={() => handleSelectTicket(ticket.ticketId)}
-            >
-              <p>Ticket #{ticket.ticketNumber}</p>
-              <p>{ticket.available ? 'Available' : 'Reserved'}</p>
-            </div>
-          ))
-        ) : (
-          <p>No tickets available.</p>
-        )}
+        {tickets.map((ticket) => (
+          <div
+            key={ticket.ticketId}
+            className={`ticket ${selectedTickets.includes(ticket.ticketId) ? 'selected' : ''}`}
+            onClick={() => handleSelectTicket(ticket.ticketId)}
+          >
+            <p>Ticket #{ticket.ticketNumber}</p>
+            <p>{ticket.available ? 'Available' : 'Reserved'}</p>
+          </div>
+        ))}
       </div>
 
       <div className="actions">
         <p>
           Selected Tickets: {selectedTickets.length}/{ticketCount}
         </p>
-        <p>
-          Selected Ticket Numbers:
-          <ul>
-            {getSelectedTicketNumbers().map((ticketNumber, index) => (
-              <li key={index}>Ticket #{ticketNumber}</li>
-            ))}
-          </ul>
-        </p>
+        <ul>
+          {getSelectedTicketNumbers().map((ticketNumber, index) => (
+            <li key={index}>Ticket #{ticketNumber}</li>
+          ))}
+        </ul>
         <button onClick={() => setShowModal(true)} disabled={selectedTickets.length === 0}>
           Reserve Tickets
         </button>
@@ -168,62 +164,49 @@ const TicketGrid = () => {
           <div className="modal-content">
             <h2>Reserve Tickets</h2>
 
-            {errorMessage && (
-              <div className="error-message">
-                <p>{errorMessage}</p>
-              </div>
-            )}
+            {errorMessage && <div className="error-message">{errorMessage}</div>}
 
             <form onSubmit={handleFormSubmit}>
-              <div>
-                <label>
-                  First Name:
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Last Name:
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Email:
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-              </div>
-              <div>
-                <label>
-                  Phone Number:
-                  <input
-                    type="tel"
-                    name="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={handleFormChange}
-                    required
-                  />
-                </label>
-              </div>
-
+              <label>
+                First Name:
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
+              <label>
+                Last Name:
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
+              <label>
+                Email:
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
+              <label>
+                Phone Number:
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
               <div className="modal-actions">
                 <button type="submit">Submit</button>
                 <button type="button" onClick={() => setShowModal(false)}>
