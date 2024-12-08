@@ -165,9 +165,13 @@ app.get('/api/tickets/reserved', async (req, res) => {
 });
 
 
+
 // Handle 404 errors for undefined routes
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
+});
+app.get('/health', (req, res) => {
+  res.status(200).json({ message: 'Server is running smoothly' });
 });
 
 // Start the server
