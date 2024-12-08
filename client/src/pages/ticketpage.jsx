@@ -4,7 +4,7 @@ import axios from 'axios';
 import './ticketgrid.css';
 
 const TicketGrid = () => {
-  const [tickets, setTickets] = useState([]);
+  const [tickets, setTickets] = useState([]); // Ensure it's an array
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [ticketCount, setTicketCount] = useState(0);
   const [showModal, setShowModal] = useState(false);
@@ -35,7 +35,13 @@ const TicketGrid = () => {
     axios
       .get(`https://ticket-sys-client.vercel.app/api/Tickets?sessionId=${sessionId}`)
       .then((response) => {
-        setTickets(response.data);
+        console.log('API response:', response.data); // Debug log
+        if (Array.isArray(response.data)) {
+          setTickets(response.data); // Safeguard for array data
+        } else {
+          console.error('Invalid data format:', response.data);
+          setTickets([]); // Fallback to empty array
+        }
         setLoading(false);
       })
       .catch((error) => {
@@ -91,7 +97,6 @@ const TicketGrid = () => {
           )}. Please select different tickets.`
         );
 
-        // Remove reserved tickets from selectedTickets
         setSelectedTickets((prevSelected) =>
           prevSelected.filter(
             (ticketId) =>
@@ -125,16 +130,20 @@ const TicketGrid = () => {
     <div className="ticket-grid">
       <h1>Available Tickets</h1>
       <div className="tickets">
-        {tickets.map((ticket) => (
-          <div
-            key={ticket.ticketId}
-            className={`ticket ${selectedTickets.includes(ticket.ticketId) ? 'selected' : ''}`}
-            onClick={() => handleSelectTicket(ticket.ticketId)}
-          >
-            <p>Ticket #{ticket.ticketNumber}</p>
-            <p>{ticket.available ? 'Available' : 'Reserved'}</p>
-          </div>
-        ))}
+        {Array.isArray(tickets) && tickets.length > 0 ? (
+          tickets.map((ticket) => (
+            <div
+              key={ticket.ticketId}
+              className={`ticket ${selectedTickets.includes(ticket.ticketId) ? 'selected' : ''}`}
+              onClick={() => handleSelectTicket(ticket.ticketId)}
+            >
+              <p>Ticket #{ticket.ticketNumber}</p>
+              <p>{ticket.available ? 'Available' : 'Reserved'}</p>
+            </div>
+          ))
+        ) : (
+          <p>No tickets available.</p>
+        )}
       </div>
 
       <div className="actions">
