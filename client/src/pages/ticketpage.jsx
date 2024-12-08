@@ -1,62 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import './ticketgrid.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./ticketgrid.css";
 
 const TicketGrid = () => {
   const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
-  const [ticketCount, setTicketCount] = useState(0);
+  const [ticketCount, setTicketCount] = useState(5); // Adjust ticket count if needed
   const [showModal, setShowModal] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phoneNumber: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
   });
   const [loading, setLoading] = useState(true);
-  const [invalidSession, setInvalidSession] = useState(false);
-  const location = useLocation();
 
   useEffect(() => {
-    const queryParams = new URLSearchParams(location.search);
-    const sessionId = queryParams.get('sessionId');
-    const count = parseInt(queryParams.get('ticketCount'), 10) || 0;
-
-    if (!sessionId || count <= 0) {
-      setInvalidSession(true);
-      setLoading(false);
-      return;
-    }
-
-    setTicketCount(count);
-
-    const url = `https://ticket-sys-server.vercel.app/api/Tickets?sessionId=${sessionId}`;
-    console.log('Fetching tickets from:', url);
-
-    axios
-      .get(url)
-      .then((response) => {
+    const fetchTickets = async () => {
+      try {
+        const response = await axios.get(
+          "https://ticket-sys-server.vercel.app/api/Tickets"
+        );
         if (Array.isArray(response.data)) {
           setTickets(response.data);
         } else {
-          console.error('Invalid data format:', response.data);
-          setErrorMessage('Invalid data format received from server.');
+          setErrorMessage("Invalid data format received from server.");
         }
+      } catch (error) {
+        console.error("Error fetching tickets:", error);
+        setErrorMessage("Failed to fetch tickets. Please try again.");
+      } finally {
         setLoading(false);
-      })
-      .catch((error) => {
-        console.error('API request error:', error.message);
-        if (error.response && error.response.status === 404) {
-          setErrorMessage('This link is invalid or has expired.');
-        } else {
-          setErrorMessage('Error fetching available tickets. Please try again.');
-        }
-        setInvalidSession(true);
-        setLoading(false);
-      });
-  }, [location.search]);
+      }
+    };
+
+    fetchTickets();
+  }, []);
 
   const handleSelectTicket = (ticketId) => {
     if (selectedTickets.includes(ticketId)) {
@@ -64,7 +44,7 @@ const TicketGrid = () => {
     } else if (selectedTickets.length < ticketCount) {
       setSelectedTickets([...selectedTickets, ticketId]);
     } else {
-      setErrorMessage(`You can only select ${ticketCount} tickets.`);
+      setErrorMessage(`You can only select up to ${ticketCount} tickets.`);
     }
   };
 
@@ -81,22 +61,25 @@ const TicketGrid = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('https://ticket-sys-server.vercel.app/api/Tickets/reserve', {
-        ticketIds: selectedTickets,
-        ...formData,
-      });
+      const response = await axios.post(
+        "https://ticket-sys-server.vercel.app/api/Tickets/reserve",
+        {
+          ticketIds: selectedTickets,
+          ...formData,
+        }
+      );
 
-      alert('Tickets reserved successfully!');
+      alert("Tickets reserved successfully!");
       setSelectedTickets([]);
-      setFormData({ firstName: '', lastName: '', email: '', phoneNumber: '' });
-      setErrorMessage('');
+      setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
+      setErrorMessage("");
       setShowModal(false);
     } catch (error) {
       if (error.response && error.response.status === 400) {
         const { reservedTickets } = error.response.data;
         setErrorMessage(
           `The following tickets have just been reserved by another user: ${reservedTickets.join(
-            ', '
+            ", "
           )}. Please select different tickets.`
         );
 
@@ -105,13 +88,14 @@ const TicketGrid = () => {
             (ticketId) =>
               !reservedTickets.some(
                 (ticketNumber) =>
-                  tickets.find((ticket) => ticket.ticketId === ticketId)?.ticketNumber === ticketNumber
+                  tickets.find((ticket) => ticket.ticketId === ticketId)
+                    ?.ticketNumber === ticketNumber
               )
           )
         );
       } else {
-        console.error('Error reserving tickets:', error);
-        setErrorMessage('An unexpected error occurred. Please try again.');
+        console.error("Error reserving tickets:", error);
+        setErrorMessage("An unexpected error occurred. Please try again.");
       }
     }
   };
@@ -125,22 +109,21 @@ const TicketGrid = () => {
     return <div>Loading...</div>;
   }
 
-  if (invalidSession) {
-    return <div>{errorMessage || 'This link is invalid or has expired.'}</div>;
-  }
-
   return (
     <div className="ticket-grid">
       <h1>Available Tickets</h1>
+      {errorMessage && <div className="error-message">{errorMessage}</div>}
       <div className="tickets">
         {tickets.map((ticket) => (
           <div
             key={ticket.ticketId}
-            className={`ticket ${selectedTickets.includes(ticket.ticketId) ? 'selected' : ''}`}
+            className={`ticket ${
+              selectedTickets.includes(ticket.ticketId) ? "selected" : ""
+            }`}
             onClick={() => handleSelectTicket(ticket.ticketId)}
           >
             <p>Ticket #{ticket.ticketNumber}</p>
-            <p>{ticket.available ? 'Available' : 'Reserved'}</p>
+            <p>{ticket.available ? "Available" : "Reserved"}</p>
           </div>
         ))}
       </div>
