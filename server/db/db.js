@@ -7,6 +7,7 @@ const sequelize = new Sequelize({
   password: process.env.DB_PASSWORD,  // Your DB password
   database: process.env.DB_NAME,      // Your DB name
   dialect: 'mysql',                   // Dialect (could be mysql, postgres, etc.)
+  dialectModule:'mysql2',
   pool: {
     acquire: 30000,                   // Increase connection acquire timeout (in ms)
     idle: 10000,                      // Increase idle timeout (in ms)
