@@ -1,48 +1,23 @@
 const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
-const db = require('./db/db');
-const { DataTypes } = require("sequelize"); // Ensure DataTypes is imported
-const Ticket = require('./models/Ticket');
+const db = require('./server/db/db'); // Import your database connection
 
 const app = express();
 
 // Middleware for cross-origin requests
-const allowCors = fn => async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  // another common pattern
-  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
-  return await fn(req, res)
-}
-
-const handler = (req, res) => {
-  const d = new Date()
-  res.end(d.toString())
-}
-
-module.exports = allowCors(handler)
-
+app.use(cors());
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-/**
- * Generate a unique session-based link for tickets
- */
-app.post("/api/Tickets/generate", async (req, res) => {
+// In-memory store for session tickets (for session-based functionality)
+const sessionTickets = {};  // Stores sessionId -> tickets mapping
+
+// Route to generate a unique link with ticket count
+app.post("/api/tickets/generate", (req, res) => {
   const { ticketCount } = req.body;
 
-  
   if (!ticketCount || ticketCount <= 0) {
     return res.status(400).json({ error: "Invalid ticket count" });
   }
@@ -56,22 +31,28 @@ app.post("/api/Tickets/generate", async (req, res) => {
     available: true,
   }));
 
-  const uniqueLink = `https://ticket-sys-client.vercel.app/ticket?sessionId=${sessionId}&ticketCount=${ticketCount}`;
+  // Store the session tickets in memory
+  sessionTickets[sessionId] = tickets;
 
+  // Generate the URL with the ticket count as a query parameter
+  const uniqueLink = http://localhost:3000/tickets?sessionId=${sessionId}&ticketCount=${ticketCount};
+
+  // Return the unique URL
   res.json({ url: uniqueLink });
 });
 
-/**
- * Fetch available tickets
- */
-app.get('/api/Tickets', async (req, res) => {
+// Route to fetch available tickets (either from session or from database)
+// Assuming you are using MySQL or any database to fetch available tickets
+app.get('/api/tickets', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM Tickets WHERE available = TRUE');
-
+    // Fetch only tickets where 'available' is TRUE
+    const [rows] = await db.query('SELECT * FROM tickets WHERE available = TRUE');
+    
     if (rows.length === 0) {
       return res.status(404).json({ message: 'No available tickets found' });
     }
 
+    // Send available tickets as response
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -79,18 +60,23 @@ app.get('/api/Tickets', async (req, res) => {
   }
 });
 
-/**
- * Reserve tickets
- */
-app.post('/api/Tickets/reserve', async (req, res) => {
-  const { sessionId, ticketIds, firstName, lastName, email, phoneNumber } = req.body;
+
+// Route to reserve tickets
+const Ticket = require('./server/models/Ticket'); // Ensure the correct path to your Ticket model file
+
+// Reserve Tickets API
+app.post('/api/tickets/reserve', async (req, res) => {
+  const { ticketIds, firstName, lastName, email, phoneNumber } = req.body;
 
   try {
-    // Process ticket reservation
+    // Retrieve tickets from the database
     const tickets = await Ticket.findAll({
-      where: { ticketId: ticketIds },
+      where: {
+        ticketId: ticketIds,
+      },
     });
 
+    // Check if any tickets are already reserved
     const reservedTickets = tickets.filter((ticket) => !ticket.available);
 
     if (reservedTickets.length > 0) {
@@ -100,19 +86,21 @@ app.post('/api/Tickets/reserve', async (req, res) => {
       });
     }
 
+    // Update tickets to mark them as reserved
     await Ticket.update(
       {
         available: false,
-        name: `${firstName} ${lastName}`,
+        name: ${firstName} ${lastName},
         email,
         phoneNumber,
         reservationDate: new Date(),
       },
       {
-        where: { ticketId: ticketIds },
+        where: {
+          ticketId: ticketIds,
+        },
       }
     );
-
 
     res.json({ message: 'Tickets reserved successfully!' });
   } catch (error) {
@@ -121,9 +109,7 @@ app.post('/api/Tickets/reserve', async (req, res) => {
   }
 });
 
-/**
- * Fetch reserved tickets
- */
+// Validate Tickets API
 app.post('/api/tickets/validate', async (req, res) => {
   const { ticketIds } = req.body;
 
@@ -149,14 +135,16 @@ app.post('/api/tickets/validate', async (req, res) => {
     res.status(500).json({ message: 'Error validating tickets.' });
   }
 });
-app.get('/api/Tickets/reserved', async (req, res) => {
+app.get('/api/tickets/reserved', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM Tickets WHERE available = FALSE');
-
+    // Fetch tickets where 'available' is false (reserved tickets)
+    const [rows] = await db.query('SELECT * FROM tickets WHERE available = FALSE');
+    
     if (rows.length === 0) {
-      return res.status(404).json({ message: 'No reserved Tickets found' });
+      return res.status(404).json({ message: 'No reserved tickets found' });
     }
 
+    // Send reserved tickets as response
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -164,14 +152,13 @@ app.get('/api/Tickets/reserved', async (req, res) => {
   }
 });
 
-
-// Handle 404 errors for undefined routes
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+// Handle 404 (Not Found) errors for undefined routes
+app.use((req, res, next) => {
+  res.status(404).send("Route not found");
 });
 
 // Start the server
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5000;
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(Server running on port ${port});
 });
