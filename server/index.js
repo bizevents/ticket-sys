@@ -170,7 +170,7 @@ app.get('/api/tickets/reserved', async (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
-app.get('/health', (req, res) => {
+app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
 });
 
