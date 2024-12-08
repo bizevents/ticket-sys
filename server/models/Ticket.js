@@ -11,7 +11,7 @@ const sequelize = new Sequelize({
   password: process.env.DB_PASSWORD, // Aiven database password
   database: process.env.DB_NAME, // Aiven database name
   dialectOptions: {
-    connectTimeout: 10000, // Connection timeout (in milliseconds)
+    connectTimeout: 30000, // Connection timeout (in milliseconds)
   },
   logging: process.env.DB_LOGGING === 'true', // Enable logging if DB_LOGGING=true in .env
 });
