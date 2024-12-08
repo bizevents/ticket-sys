@@ -167,17 +167,9 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
 });
 
-
-
-// Handle 404 errors for undefined routes
-app.use((req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
-
-
 // Start the server
 const port = process.env.PORT || 5000
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  (`Server running on port ${port}`);
 });
 module.exports = app
