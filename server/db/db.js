@@ -1,6 +1,4 @@
 const { Sequelize } = require('sequelize');
-i
-
 // Create a new Sequelize instance
 const sequelize = new Sequelize({
   host: process.env.DB_HOST,          // Your DB host (e.g., localhost, RDS endpoint)
