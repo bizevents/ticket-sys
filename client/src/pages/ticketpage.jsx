@@ -61,6 +61,12 @@ const TicketGrid = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if the form is fully filled out
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber) {
+      setErrorMessage("Please fill out all fields before reserving tickets.");
+      return;
+    }
+
     try {
       const response = await axios.post(
         "https://ticket-sys-server.vercel.app/api/tickets/reserve",
