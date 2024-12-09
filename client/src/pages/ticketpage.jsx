@@ -1,3 +1,6 @@
+import { useState,useEffect } from "react";
+import axios from "axios";
+import './ticketpage.css'
 const TicketGrid = () => {
   const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
