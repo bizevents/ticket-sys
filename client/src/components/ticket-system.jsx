@@ -1,18 +1,20 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { QRCodeCanvas } from 'qrcode.react';
+import './Ticketsystem.css'; // Import the CSS file
 
 const TicketSystem = () => {
-  const [ticketCount, setTicketCount] = useState(1);
-  const [uniqueLink, setUniqueLink] = useState("");
+  const [ticketCount, setTicketCount] = useState(0);
+  const [uniqueLink, setUniqueLink] = useState('');
 
-  const handleTicketCountChange = (e) => {
-    setTicketCount(Number(e.target.value)); // Convert input to a number
+  const handleTicketCountChange = (event) => {
+    setTicketCount(event.target.value);
   };
 
   const generateLink = () => {
     if (ticketCount <= 0) {
-      alert("Please enter a valid ticket count.");
+      alert('Please enter a valid ticket count.');
       return;
     }
 
@@ -26,7 +28,7 @@ const TicketSystem = () => {
 
   return (
     <div className="ticket-system-container">
-      <h1 className="header">BIZ BAZ RAFFLE</h1>
+      <h1 className="header">BIZ BAZ RAFFLE </h1>
       <div className="form-container">
         <label htmlFor="ticketCount" className="label">
           Number of Tickets:
@@ -43,12 +45,10 @@ const TicketSystem = () => {
         </button>
       </div>
       {uniqueLink && (
-        <div className="qr-container" style={{ display: "block" }}>
+        <div className="qr-container" style={{display:'block'}}>
           <p className="qr-text">Here is your unique session QR Code:</p>
           <QRCodeCanvas value={uniqueLink} size={256} level="H" className="qr-code" />
-          <button>
-            <Link to={{ pathname: "/tickets", state: { ticketCount } }}>Continue here</Link>
-          </button>
+          <button><Link to={uniqueLink}>continue here</Link></button>
         </div>
       )}
     </div>
