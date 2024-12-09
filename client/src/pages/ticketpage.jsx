@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom"; // Import useNavigate
+import { useNavigate, useLocation } from "react-router-dom";
 import './ticketgrid.css';
 
 const TicketGrid = () => {
-  const navigate = useNavigate(); // Hook to handle redirection
-  const location = useLocation(); // Hook to access the URL and parameters
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [ticketCount, setTicketCount] = useState(5); // Default value if no count in URL
-  const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
@@ -20,20 +19,16 @@ const TicketGrid = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Extract ticketCount from URL query params
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const count = params.get('ticketCount');
     if (count) {
-      setTicketCount(Number(count)); // Update ticket count from URL query parameter
+      setTicketCount(Number(count));
     }
 
     const fetchTickets = async () => {
       try {
         const response = await axios.get("https://ticket-sys-server.vercel.app/api/tickets");
-
-        // Log the response data to inspect the structure
-        console.log("API Response Data:", response.data);
 
         if (response.data.message) {
           setErrorMessage(response.data.message);
@@ -51,7 +46,7 @@ const TicketGrid = () => {
     };
 
     fetchTickets();
-  }, [location.search]); // Dependency on location.search to re-fetch when URL changes
+  }, [location.search]);
 
   const handleSelectTicket = (ticketId) => {
     if (selectedTickets.includes(ticketId)) {
@@ -61,15 +56,6 @@ const TicketGrid = () => {
     } else {
       setErrorMessage(`You can only select up to ${ticketCount} tickets.`);
     }
-  };
-
-  const getSelectedTicketNumbers = () => {
-    return selectedTickets
-      .map((ticketId) => {
-        const ticket = tickets.find((ticket) => ticket.ticketId === ticketId);
-        return ticket ? ticket.ticket_number : null;
-      })
-      .filter((ticketNumber) => ticketNumber !== null);
   };
 
   const handleFormSubmit = async (e) => {
@@ -84,41 +70,23 @@ const TicketGrid = () => {
         }
       );
 
-      // Redirect to the ticket generated page with form data and selected tickets
+      // Once the tickets are reserved, we query for reserved tickets
+      const reservedResponse = await axios.get("https://ticket-sys-server.vercel.app/api/tickets/reserved");
+
+      // Redirect to the TicketGenerated page with reserved tickets
       navigate("/ticket-generated", {
         state: {
           firstName: formData.firstName,
-          selectedTickets: getSelectedTicketNumbers(),
+          reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
         },
       });
 
       setSelectedTickets([]);
       setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
       setErrorMessage("");
-      setShowModal(false);
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        const { reservedTickets } = error.response.data;
-        setErrorMessage(
-          `The following tickets have just been reserved by another user: ${reservedTickets.join(
-            ", "
-          )}. Please select different tickets.`
-        );
-
-        setSelectedTickets((prevSelected) =>
-          prevSelected.filter(
-            (ticketId) =>
-              !reservedTickets.some(
-                (ticketNumber) =>
-                  tickets.find((ticket) => ticket.ticketId === ticketId)
-                    ?.ticket_number === ticketNumber
-              )
-          )
-        );
-      } else {
-        console.error("Error reserving tickets:", error);
-        setErrorMessage("An unexpected error occurred. Please try again.");
-      }
+      console.error("Error reserving tickets:", error);
+      setErrorMessage("An error occurred while reserving tickets.");
     }
   };
 
@@ -149,77 +117,55 @@ const TicketGrid = () => {
       </div>
 
       <div className="actions">
-        <p>
-          Selected Tickets: {selectedTickets.length}/{ticketCount}
-        </p>
-        <ul>
-          {getSelectedTicketNumbers().map((ticketNumber, index) => (
-            <li key={index}>Ticket #{ticketNumber}</li>
-          ))}
-        </ul>
-        <button onClick={() => setShowModal(true)} disabled={selectedTickets.length === 0}>
+        <p>Selected Tickets: {selectedTickets.length}/{ticketCount}</p>
+        <button onClick={handleFormSubmit} disabled={selectedTickets.length === 0}>
           Reserve Tickets
         </button>
       </div>
 
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>Reserve Tickets</h2>
-
-            {errorMessage && <div className="error-message">{errorMessage}</div>}
-
-            <form onSubmit={handleFormSubmit}>
-              <label>
-                First Name:
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                Last Name:
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                Email:
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <label>
-                Phone Number:
-                <input
-                  type="tel"
-                  name="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={handleFormChange}
-                  required
-                />
-              </label>
-              <div className="modal-actions">
-                <button type="submit">Submit</button>
-                <button type="button" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <form onSubmit={handleFormSubmit}>
+        <label>
+          First Name:
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleFormChange}
+            required
+          />
+        </label>
+        <label>
+          Last Name:
+          <input
+            type="text"
+            name="lastName"
+            value={formData.lastName}
+            onChange={handleFormChange}
+            required
+          />
+        </label>
+        <label>
+          Email:
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleFormChange}
+            required
+          />
+        </label>
+        <label>
+          Phone Number:
+          <input
+            type="tel"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleFormChange}
+            required
+          />
+        </label>
+        <button type="submit">Submit</button>
+      </form>
     </div>
   );
 };
