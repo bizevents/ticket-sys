@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { useNavigate, useLocation } from "react-router-dom"; // Import useNavigate
 import './ticketgrid.css';
 
 const TicketGrid = () => {
+  const navigate = useNavigate(); // Hook to handle redirection
+  const location = useLocation(); // Hook to access the URL and parameters
+
   const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
   const [ticketCount, setTicketCount] = useState(5); // Default value if no count in URL
@@ -17,11 +20,8 @@ const TicketGrid = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  // Use useLocation to read URL parameters
-  const location = useLocation();
-
+  // Extract ticketCount from URL query params
   useEffect(() => {
-    // Extract ticketCount from URL query params
     const params = new URLSearchParams(location.search);
     const count = params.get('ticketCount');
     if (count) {
@@ -84,7 +84,14 @@ const TicketGrid = () => {
         }
       );
 
-      alert("Tickets reserved successfully!");
+      // Redirect to the ticket generated page with form data and selected tickets
+      navigate("/ticket-generated", {
+        state: {
+          firstName: formData.firstName,
+          selectedTickets: getSelectedTicketNumbers(),
+        },
+      });
+
       setSelectedTickets([]);
       setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
       setErrorMessage("");
