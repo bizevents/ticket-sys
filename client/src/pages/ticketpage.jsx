@@ -20,12 +20,17 @@ const TicketGrid = () => {
     const fetchTickets = async () => {
       try {
         const response = await axios.get("https://ticket-sys-server.vercel.app/api/tickets");
-        console.log(response); // Log the full response
-    
+        
+        // Log the response data to inspect the structure
+        console.log("API Response Data:", response.data);
+        
+        // If there's a message in the response (like no tickets found)
         if (response.data.message) {
-          // If there's a message (like no tickets found)
           setErrorMessage(response.data.message);
         } else if (Array.isArray(response.data)) {
+          // Log the first few tickets to ensure the ticketNumber is present
+          console.log("First few tickets:", response.data.slice(0, 5));
+  
           setTickets(response.data);
         } else {
           setErrorMessage("Invalid data format received from server.");
@@ -37,10 +42,9 @@ const TicketGrid = () => {
         setLoading(false);
       }
     };
-
+  
     fetchTickets();
   }, []);
-
   const handleSelectTicket = (ticketId) => {
     if (selectedTickets.includes(ticketId)) {
       setSelectedTickets(selectedTickets.filter((id) => id !== ticketId));
