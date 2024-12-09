@@ -31,7 +31,7 @@ const ReservedTickets = () => {
           {reservedTickets.length > 0 ? (
             reservedTickets.map((ticket) => (
               <div key={ticket.ticketId} className="ticket">
-                <p>Ticket #{ticket.ticket_Number}</p> {/* Correct field name */}
+                <p>Ticket #{ticket.ticket_number}</p> {/* Correct field name */}
                 <p>Reserved by: {ticket.name}</p>
                 <p>Email: {ticket.email}</p>
                 <p>Phone: {ticket.phone_number}</p> {/* Correct field name */}
