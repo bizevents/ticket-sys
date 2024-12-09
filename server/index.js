@@ -90,7 +90,7 @@ app.post('/api/tickets/reserve', async (req, res) => {
         available: false,
         name: `${firstName} ${lastName}`,
         email,
-        phone_number,
+        phoneNumber,
         reservationDate: new Date(),
       },
       {
