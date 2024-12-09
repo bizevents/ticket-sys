@@ -28,10 +28,10 @@ const ReservedTickets = () => {
           {reservedTickets.length > 0 ? (
             reservedTickets.map((ticket) => (
               <div key={ticket.ticketId} className="ticket">
-                <p>Ticket #{ticket.ticket_number}</p>
+                <p>Ticket #{ticket.ticket_number}</p> {/* Use the correct field name here */}
                 <p>Reserved by: {ticket.name}</p>
                 <p>Email: {ticket.email}</p>
-                <p>Phone: {ticket.phone_number}</p>
+                <p>Phone: {ticket.phone_number}</p> {/* Use the correct field name here */}
                 <p>Reservation Date: {ticket.reservationDate}</p>
               </div>
             ))
@@ -45,3 +45,4 @@ const ReservedTickets = () => {
 };
 
 export default ReservedTickets;
+
