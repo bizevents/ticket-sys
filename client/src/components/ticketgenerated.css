@@ -1,35 +1,106 @@
-.ticket-generated {
-    text-align: center;
-    padding: 20px;
-  }
-  
-  .ticket-display {
-    margin-top: 20px;
+/* Basic Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fc;
+    color: #333;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    height: 100vh;
   }
   
-  .ticket {
-    background-color: #f4f4f4;
-    padding: 20px;
-    margin: 10px;
+  .ticket-generator-container {
+    background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    padding: 2rem;
+    text-align: center;
+    box-sizing: border-box;
   }
   
-  .download-section {
-    margin-top: 20px;
+  /* Title and Thank You Message */
+  h1 {
+    font-size: 2rem;
+    color: #4CAF50;
+    margin-bottom: 1rem;
   }
   
-  .download-btn {
-    padding: 10px 20px;
-    background-color: #28a745;
+  h2 {
+    font-size: 1.25rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Reserved Ticket List */
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  ul li {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Image Generation Section */
+  .ticket-image-container {
+    margin-top: 1.5rem;
+    padding: 20px;
+    background-color: #f3f6f9;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .ticket-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .ticket-generator-actions {
+    margin-top: 1.5rem;
+  }
+  
+  .ticket-generator-actions button {
+    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
-    text-decoration: none;
-    font-size: 16px;
+    padding: 10px 20px;
+    font-size: 1rem;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .ticket-generator-actions button:hover {
+    background-color: #45a049;
+  }
+  
+  .ticket-generator-actions button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+  }
+  
+  /* Error message */
+  .error-message {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
   }
   
