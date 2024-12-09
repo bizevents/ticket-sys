@@ -7,31 +7,12 @@ const Ticket = require('./models/Ticket');
 
 const app = express();
 
-// Middleware for cross-origin requests
-const allowCors = fn => async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', true)
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  // another common pattern
-  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT')
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-  )
-  if (req.method === 'OPTIONS') {
-    res.status(200).end()
-    return
-  }
-  return await fn(req, res)
-}
-
-const handler = (req, res) => {
-  const d = new Date()
-  res.end(d.toString())
-}
-
-module.exports = allowCors(handler)
-
+app.use(cors({
+  origin: "https://ticket-sys-client.vercel.app.com", // Allow all origins, or specify a specific domain, e.g., "https://your-frontend-domain.com"
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Accept', 'Content-Type', 'Authorization'],
+  credentials: true,  // If you need to send credentials like cookies
+}));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
@@ -87,7 +68,7 @@ app.get('/api/tickets', async (req, res) => {
  * Reserve tickets
  */
 app.post('/api/tickets/reserve', async (req, res) => {
-  const { sessionId, ticketIds, firstName, lastName, email, phoneNumber } = req.body;
+  const {ticketIds, firstName, lastName, email, phoneNumber } = req.body;
 
   try {
     // Process ticket reservation
