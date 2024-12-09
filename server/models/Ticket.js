@@ -39,7 +39,7 @@ const Ticket = sequelize.define('Ticket', {
 });
 
 // Sync the model with the database
-Ticket.sync({ alter: true })
+Ticket.sync()
   .then(() => console.log('Ticket model has been synchronized with the database'))
   .catch((error) => console.error('Error syncing Ticket model:', error));
 
