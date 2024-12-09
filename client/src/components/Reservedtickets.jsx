@@ -28,10 +28,10 @@ const ReservedTickets = () => {
           {reservedTickets.length > 0 ? (
             reservedTickets.map((ticket) => (
               <div key={ticket.ticketId} className="ticket">
-                <p>Ticket #{ticket.ticketNumber}</p>
+                <p>Ticket #{ticket.ticket_number}</p>
                 <p>Reserved by: {ticket.name}</p>
                 <p>Email: {ticket.email}</p>
-                <p>Phone: {ticket.phoneNumber}</p>
+                <p>Phone: {ticket.phone_number}</p>
                 <p>Reservation Date: {ticket.reservationDate}</p>
               </div>
             ))
