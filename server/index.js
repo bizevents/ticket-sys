@@ -8,7 +8,7 @@ const Ticket = require('./models/Ticket');
 const app = express();
 
 app.use(cors({
-  origin: "https://ticket-sys-client.vercel.app.com", // Allow all origins, or specify a specific domain, e.g., "https://your-frontend-domain.com"
+  origin: "https://ticket-sys-client.vercel.app", // Allow all origins, or specify a specific domain, e.g., "https://your-frontend-domain.com"
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Accept', 'Content-Type', 'Authorization'],
   credentials: true,  // If you need to send credentials like cookies
