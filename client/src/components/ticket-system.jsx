@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import QRCodeCanvas from "qrcode.react";
 
 const TicketSystem = () => {
-  const [ticketCount, setTicketCount] = useState(0);
+  const [ticketCount, setTicketCount] = useState(1);
   const [uniqueLink, setUniqueLink] = useState("");
 
   const handleTicketCountChange = (e) => {
