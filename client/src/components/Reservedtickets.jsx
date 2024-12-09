@@ -35,7 +35,7 @@ const ReservedTickets = () => {
                 <p>Reserved by: {ticket.name}</p>
                 <p>Email: {ticket.email}</p>
                 <p>Phone: {ticket.phone_number}</p> {/* Correct field name */}
-                <p>Reservation Date: {ticket.reservationDate}</p>
+                <p>Reservation Date: {ticket.reservation_date}</p>
               </div>
             ))
           ) : (

@@ -1,10 +1,12 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import './ticketgrid.css'
+import { useLocation } from "react-router-dom"; // Import useLocation
+import './ticketgrid.css';
+
 const TicketGrid = () => {
   const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
-  const [ticketCount, setTicketCount] = useState(5); // Adjust ticket count if needed
+  const [ticketCount, setTicketCount] = useState(5); // Default value if no count in URL
   const [showModal, setShowModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -15,18 +17,27 @@ const TicketGrid = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  // Use useLocation to read URL parameters
+  const location = useLocation();
+
   useEffect(() => {
+    // Extract ticketCount from URL query params
+    const params = new URLSearchParams(location.search);
+    const count = params.get('ticketCount');
+    if (count) {
+      setTicketCount(Number(count)); // Update ticket count from URL query parameter
+    }
+
     const fetchTickets = async () => {
       try {
         const response = await axios.get("https://ticket-sys-server.vercel.app/api/tickets");
-        
+
         // Log the response data to inspect the structure
         console.log("API Response Data:", response.data);
-        
+
         if (response.data.message) {
           setErrorMessage(response.data.message);
         } else if (Array.isArray(response.data)) {
-          console.log("First few tickets:", response.data.slice(0, 5));
           setTickets(response.data);
         } else {
           setErrorMessage("Invalid data format received from server.");
@@ -38,9 +49,9 @@ const TicketGrid = () => {
         setLoading(false);
       }
     };
-  
+
     fetchTickets();
-  }, []);
+  }, [location.search]); // Dependency on location.search to re-fetch when URL changes
 
   const handleSelectTicket = (ticketId) => {
     if (selectedTickets.includes(ticketId)) {
@@ -56,7 +67,7 @@ const TicketGrid = () => {
     return selectedTickets
       .map((ticketId) => {
         const ticket = tickets.find((ticket) => ticket.ticketId === ticketId);
-        return ticket ? ticket.ticket_number : null; // Use ticket_number here
+        return ticket ? ticket.ticket_number : null;
       })
       .filter((ticketNumber) => ticketNumber !== null);
   };
@@ -93,7 +104,7 @@ const TicketGrid = () => {
               !reservedTickets.some(
                 (ticketNumber) =>
                   tickets.find((ticket) => ticket.ticketId === ticketId)
-                    ?.ticket_number === ticketNumber // Use ticket_number here
+                    ?.ticket_number === ticketNumber
               )
           )
         );
@@ -124,7 +135,7 @@ const TicketGrid = () => {
             className={`ticket ${selectedTickets.includes(ticket.ticketId) ? "selected" : ""}`}
             onClick={() => handleSelectTicket(ticket.ticketId)}
           >
-            <p>Ticket #{ticket.ticket_number}</p> {/* Use ticket_number here */}
+            <p>Ticket #{ticket.ticket_number}</p>
             <p>{ticket.available ? "Available" : "Reserved"}</p>
           </div>
         ))}
@@ -136,7 +147,7 @@ const TicketGrid = () => {
         </p>
         <ul>
           {getSelectedTicketNumbers().map((ticketNumber, index) => (
-            <li key={index}>Ticket #{ticketNumber}</li>  
+            <li key={index}>Ticket #{ticketNumber}</li>
           ))}
         </ul>
         <button onClick={() => setShowModal(true)} disabled={selectedTickets.length === 0}>
