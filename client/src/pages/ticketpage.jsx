@@ -18,6 +18,7 @@ const TicketGrid = () => {
     phoneNumber: "",
   });
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -61,9 +62,8 @@ const TicketGrid = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if the form is fully filled out
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber) {
-      setErrorMessage("Please fill out all fields before reserving tickets.");
+      setErrorMessage("Please fill out all the fields.");
       return;
     }
 
@@ -90,6 +90,7 @@ const TicketGrid = () => {
       setSelectedTickets([]);
       setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
       setErrorMessage("");
+      setIsModalOpen(false); // Close the modal after successful reservation
     } catch (error) {
       console.error("Error reserving tickets:", error);
       setErrorMessage("An error occurred while reserving tickets.");
@@ -99,6 +100,14 @@ const TicketGrid = () => {
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const openModal = () => {
+    setIsModalOpen(true); // Open the modal when needed
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false); // Close the modal
   };
 
   if (loading) {
@@ -124,54 +133,63 @@ const TicketGrid = () => {
 
       <div className="actions">
         <p>Selected Tickets: {selectedTickets.length}/{ticketCount}</p>
-        <button onClick={handleFormSubmit} disabled={selectedTickets.length === 0}>
+        <button onClick={openModal} disabled={selectedTickets.length === 0}>
           Reserve Tickets
         </button>
       </div>
 
-      <form onSubmit={handleFormSubmit}>
-        <label>
-          First Name:
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleFormChange}
-            required
-          />
-        </label>
-        <label>
-          Last Name:
-          <input
-            type="text"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleFormChange}
-            required
-          />
-        </label>
-        <label>
-          Email:
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleFormChange}
-            required
-          />
-        </label>
-        <label>
-          Phone Number:
-          <input
-            type="tel"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleFormChange}
-            required
-          />
-        </label>
-        <button type="submit">Submit</button>
-      </form>
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <button className="close-modal" onClick={closeModal}>X</button>
+            <h2>Reserve Your Tickets</h2>
+            <form onSubmit={handleFormSubmit}>
+              <label>
+                First Name:
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
+              <label>
+                Last Name:
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
+              <label>
+                Email:
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
+              <label>
+                Phone Number:
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleFormChange}
+                  required
+                />
+              </label>
+              <button type="submit">Submit</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
