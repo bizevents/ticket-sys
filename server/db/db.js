@@ -4,6 +4,7 @@ const mysql2 = require('mysql2'); // Import mysql2 explicitly
 // Create a new Sequelize instance
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT, // Add this line to specify the port
   dialect: 'mysql',
   dialectModule: mysql2,
   pool: {
