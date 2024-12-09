@@ -36,6 +36,10 @@ module.exports = allowCors(handler)
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Server is up and running!');
+});
+
 /**
  * Generate a unique session-based link for tickets
  */
