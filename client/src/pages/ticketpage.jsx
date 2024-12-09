@@ -127,11 +127,12 @@ const TicketGrid = () => {
             className={`ticket ${selectedTickets.includes(ticket.ticketId) ? "selected" : ""}`}
             onClick={() => handleSelectTicket(ticket.ticketId)}
           >
-            <p>Ticket #{ticket.ticketNumber}</p>
+            <p>Ticket #{ticket.ticketNumber}</p> {/* Ensure ticketNumber is rendered */}
             <p>{ticket.available ? "Available" : "Reserved"}</p>
           </div>
         ))}
       </div>
+
 
       <div className="actions">
         <p>
