@@ -14,13 +14,9 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   },
   dialectOptions: {
     connectTimeout: 30000,   // Connection timeout
-    dialectOptions: {
-    connectTimeout: 30000, // Connection timeout
     ssl: {
       rejectUnauthorized: false, // Required for some managed databases like Aiven
     },
-},
-
   },
   logging: false,            // Disable SQL query logging
 });
