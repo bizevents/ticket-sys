@@ -1,7 +1,3 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import "./ticketgrid.css";
-
 const TicketGrid = () => {
   const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
@@ -24,13 +20,10 @@ const TicketGrid = () => {
         // Log the response data to inspect the structure
         console.log("API Response Data:", response.data);
         
-        // If there's a message in the response (like no tickets found)
         if (response.data.message) {
           setErrorMessage(response.data.message);
         } else if (Array.isArray(response.data)) {
-          // Log the first few tickets to ensure the ticketNumber is present
           console.log("First few tickets:", response.data.slice(0, 5));
-  
           setTickets(response.data);
         } else {
           setErrorMessage("Invalid data format received from server.");
@@ -45,6 +38,7 @@ const TicketGrid = () => {
   
     fetchTickets();
   }, []);
+
   const handleSelectTicket = (ticketId) => {
     if (selectedTickets.includes(ticketId)) {
       setSelectedTickets(selectedTickets.filter((id) => id !== ticketId));
@@ -59,7 +53,7 @@ const TicketGrid = () => {
     return selectedTickets
       .map((ticketId) => {
         const ticket = tickets.find((ticket) => ticket.ticketId === ticketId);
-        return ticket ? ticket.ticketNumber : null;
+        return ticket ? ticket.ticket_number : null; // Use ticket_number here
       })
       .filter((ticketNumber) => ticketNumber !== null);
   };
@@ -96,7 +90,7 @@ const TicketGrid = () => {
               !reservedTickets.some(
                 (ticketNumber) =>
                   tickets.find((ticket) => ticket.ticketId === ticketId)
-                    ?.ticketNumber === ticketNumber
+                    ?.ticket_number === ticketNumber // Use ticket_number here
               )
           )
         );
@@ -127,12 +121,11 @@ const TicketGrid = () => {
             className={`ticket ${selectedTickets.includes(ticket.ticketId) ? "selected" : ""}`}
             onClick={() => handleSelectTicket(ticket.ticketId)}
           >
-            <p>Ticket #{ticket.ticketNumber}</p> {/* Ensure ticketNumber is rendered */}
+            <p>Ticket #{ticket.ticket_number}</p> {/* Use ticket_number here */}
             <p>{ticket.available ? "Available" : "Reserved"}</p>
           </div>
         ))}
       </div>
-
 
       <div className="actions">
         <p>
@@ -140,7 +133,7 @@ const TicketGrid = () => {
         </p>
         <ul>
           {getSelectedTicketNumbers().map((ticketNumber, index) => (
-            <li key={index}>Ticket #{ticketNumber}</li>
+            <li key={index}>Ticket #{ticketNumber}</li>  
           ))}
         </ul>
         <button onClick={() => setShowModal(true)} disabled={selectedTickets.length === 0}>

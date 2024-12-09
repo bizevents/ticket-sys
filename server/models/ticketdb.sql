@@ -1,4 +1,4 @@
-CREATE TABLE tickets (
+CREATE TABLE Tickets (
   ticketId INT AUTO_INCREMENT PRIMARY KEY,
   ticketNumber VARCHAR(10) NOT NULL,
   available BOOLEAN DEFAULT TRUE,
