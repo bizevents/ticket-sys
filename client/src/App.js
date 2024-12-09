@@ -15,7 +15,7 @@ const App = () => {
 
         {/* Route for the ticket grid with query parameters */}
         <Route path="/tickets" element={<TicketGrid />} />
-        <Route path='/generated' element={<TicketGenerated/>}/>
+        <Route path='/ticket-generated' element={<TicketGenerated/>}/>
       </Routes>
     </Router>
   );
