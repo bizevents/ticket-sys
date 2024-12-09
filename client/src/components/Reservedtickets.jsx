@@ -9,6 +9,9 @@ const ReservedTickets = () => {
     // Fetch the reserved tickets from the backend
     axios.get('https://ticket-sys-server.vercel.app/api/tickets/reserved')
       .then((response) => {
+        // Log the API response data to the console
+        console.log('API Response:', response.data);
+
         setReservedTickets(response.data);  // Directly set the response data
         setLoading(false);
       })
@@ -28,10 +31,10 @@ const ReservedTickets = () => {
           {reservedTickets.length > 0 ? (
             reservedTickets.map((ticket) => (
               <div key={ticket.ticketId} className="ticket">
-                <p>Ticket #{ticket.ticket_number}</p> {/* Use the correct field name here */}
+                <p>Ticket #{ticket.ticket_Number}</p> {/* Correct field name */}
                 <p>Reserved by: {ticket.name}</p>
                 <p>Email: {ticket.email}</p>
-                <p>Phone: {ticket.phone_number}</p> {/* Use the correct field name here */}
+                <p>Phone: {ticket.phone_number}</p> {/* Correct field name */}
                 <p>Reservation Date: {ticket.reservationDate}</p>
               </div>
             ))
@@ -45,4 +48,3 @@ const ReservedTickets = () => {
 };
 
 export default ReservedTickets;
-
