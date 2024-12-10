@@ -61,25 +61,32 @@ const TicketGrid = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber) {
       setErrorMessage("Please fill out all the fields.");
       return;
     }
-
+  
     try {
+      // Combine firstName and lastName into a full name
+      const fullName = `${formData.firstName} ${formData.lastName}`;
+  
+      // Sending the combined name and phoneNumber to the backend
       const response = await axios.post(
         "https://ticket-sys-server.vercel.app/api/tickets/reserve",
         {
           ticketIds: selectedTickets,
-          ...formData,
+          fullName, // Using full name here
+          email: formData.email,
+          phoneNumber: formData.phoneNumber,
         }
       );
-
+  
       // Once the tickets are reserved, we query for reserved tickets
       const reservedResponse = await axios.get(
-        `https://ticket-sys-server.vercel.app/api/tickets/reserving`);;
-
+        `https://ticket-sys-server.vercel.app/api/tickets/reserving?name=${fullName}&phoneNumber=${formData.phoneNumber}`
+      );
+  
       // Redirect to the TicketGenerated page with reserved tickets
       navigate("/ticket-generated", {
         state: {
@@ -87,7 +94,7 @@ const TicketGrid = () => {
           reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
         },
       });
-
+  
       setSelectedTickets([]);
       setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
       setErrorMessage("");
@@ -97,6 +104,7 @@ const TicketGrid = () => {
       setErrorMessage("An error occurred while reserving tickets.");
     }
   };
+  
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
