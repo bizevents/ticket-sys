@@ -76,7 +76,6 @@ const TicketGrid = () => {
         }
       );
 
-      // Once the tickets are reserved, we query for reserved tickets
       const reservedResponse = await axios.get("https://ticket-sys-server.vercel.app/api/tickets/reserving", {
         params: {
           firstName: formData.firstName,
@@ -85,12 +84,17 @@ const TicketGrid = () => {
         },
       });
       
+      console.log("Reserved response data:", reservedResponse.data); // Inspect the structure of the response
+      
       navigate("/ticket-generated", {
         state: {
           firstName: formData.firstName,
-          reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
+          reservedTicketNumbers: Array.isArray(reservedResponse.data) 
+            ? reservedResponse.data.map(ticket => ticket.ticket_number) 
+            : [], // Default to an empty array if it's not an array
         },
       });
+      
       
 
       setSelectedTickets([]);
