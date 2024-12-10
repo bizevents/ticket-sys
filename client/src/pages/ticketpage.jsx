@@ -62,31 +62,30 @@ const TicketGrid = () => {
   const handleFormSubmit = async (e) => {
     e.preventDefault();
   
-    // Check that all required fields are filled
+    // Check if all required fields are filled out
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber) {
       setErrorMessage("Please fill out all the fields.");
       return;
     }
   
     try {
-      // Combine firstName and lastName into a full name for display purposes
+      // Combine firstName and lastName into a full name for the backend
       const fullName = `${formData.firstName} ${formData.lastName}`;
   
-      // Send the firstName, lastName, and other form data to the backend
+      // Sending the full name, email, and phone number to the backend
       const response = await axios.post(
         "https://ticket-sys-server.vercel.app/api/tickets/reserve",
         {
           ticketIds: selectedTickets,
-          firstName: formData.firstName, // Send first name separately
-          lastName: formData.lastName,   // Send last name separately
+          name: fullName,  // Send combined full name to backend
           email: formData.email,
           phoneNumber: formData.phoneNumber,
         }
       );
   
-      // Query for reserved tickets using firstName, lastName, and phoneNumber
+      // Query for reserved tickets using the full name and phone number
       const reservedResponse = await axios.get(
-        `https://ticket-sys-server.vercel.app/api/tickets/reserving?firstName=${formData.firstName}&lastName=${formData.lastName}&phoneNumber=${formData.phoneNumber}`
+        `https://ticket-sys-server.vercel.app/api/tickets/reserving?name=${fullName}&phoneNumber=${formData.phoneNumber}`
       );
   
       if (reservedResponse.data.length === 0) {
@@ -95,7 +94,7 @@ const TicketGrid = () => {
         // Redirect to the TicketGenerated page with reserved tickets
         navigate("/ticket-generated", {
           state: {
-            firstName: formData.firstName,
+            firstName: formData.firstName,  // Pass first name separately for the page
             reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
           },
         });
@@ -111,6 +110,7 @@ const TicketGrid = () => {
       setErrorMessage("An error occurred while reserving tickets.");
     }
   };
+  
   
 
   const handleFormChange = (e) => {
