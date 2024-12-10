@@ -154,7 +154,6 @@ app.post('/api/tickets/reserving', async (req, res) => {
   if (!name || !phoneNumber) {
     return res.status(400).json({ message: 'Name and phone number are required.' });
   }
-
   try {
     const [rows] = await db.query(
       'SELECT * FROM Tickets WHERE name = ? AND phone_number = ? AND available = FALSE',
