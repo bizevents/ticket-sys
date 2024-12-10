@@ -173,7 +173,7 @@ app.get('/api/tickets/reserving', async (req, res) => {
     // Respond with the array of reserved tickets
     // Ensure that only the ticket numbers are returned to the frontend
     const ticketNumbers = reservedTickets.map(ticket => ({
-      ticket_number: ticket.get('ticket_number'),
+      ticketNumber: ticket.get('ticket_number'),
     }));
 
     res.json(ticketNumbers); // Return the array of ticket numbers
