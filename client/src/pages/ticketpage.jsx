@@ -87,6 +87,8 @@ const TicketGrid = () => {
       console.log("Reserved response data:", reservedResponse.data);
       console.log("Type of reserved response data:", typeof reservedResponse.data);
       
+
+      
       if (Array.isArray(reservedResponse.data)) {
         // If it's an array, proceed with mapping
         navigate("/ticket-generated", {

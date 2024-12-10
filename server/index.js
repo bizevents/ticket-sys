@@ -173,14 +173,14 @@ app.get('/api/tickets/reserving', async (req, res) => {
     // Respond with the array of reserved tickets
     // Ensure that only the ticket numbers are returned to the frontend
     const ticketNumbers = reservedTickets.map(ticket => ({
-      ticket_number: ticket.ticket_number,
+      ticket_number: ticket.get('ticket_number'),
     }));
 
     res.json(ticketNumbers); // Return the array of ticket numbers
   } catch (err) {
     console.error('Error fetching reserved tickets:', err);
     res.status(500).json({ message: 'Server error.' });
-  }})
+  }});
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
