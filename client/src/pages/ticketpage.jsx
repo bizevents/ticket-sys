@@ -93,14 +93,6 @@ const TicketGrid = () => {
       });
       
 
-      // Redirect to the TicketGenerated page with reserved tickets
-      navigate("/ticket-generated", {
-        state: {
-          firstName: formData.firstName,
-          reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
-        },
-      });
-
       setSelectedTickets([]);
       setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
       setErrorMessage("");
