@@ -84,16 +84,21 @@ const TicketGrid = () => {
         },
       });
       
-      console.log("Reserved response data:", reservedResponse.data); // Inspect the structure of the response
+      console.log("Reserved response data:", reservedResponse.data);
+      console.log("Type of reserved response data:", typeof reservedResponse.data);
       
-      navigate("/ticket-generated", {
-        state: {
-          firstName: formData.firstName,
-          reservedTicketNumbers: Array.isArray(reservedResponse.data) 
-            ? reservedResponse.data.map(ticket => ticket.ticket_number) 
-            : [], // Default to an empty array if it's not an array
-        },
-      });
+      if (Array.isArray(reservedResponse.data)) {
+        // If it's an array, proceed with mapping
+        navigate("/ticket-generated", {
+          state: {
+            firstName: formData.firstName,
+            reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
+          },
+        });
+      } else {
+        // Log the error or handle the case where it's not an array
+        console.error("Expected an array, but got:", reservedResponse.data);
+      }
       
       
 
