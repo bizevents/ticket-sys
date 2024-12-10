@@ -149,19 +149,22 @@ app.get('/api/tickets/reserved', async (req, res) => {
   }
 });
 app.get('/api/tickets/reserving', async (req, res) => {
-  const { firstName, phoneNumber } = req.query; // Extract user details from query parameters
+  const { selectedTickets, firstName } = req.query;
 
-  if (!firstName || !phoneNumber) {
-    return res.status(400).json({ message: 'Name and phone number are required.' });
+  if (!selectedTickets || !firstName) {
+    return res.status(400).json({ message: 'Ticket numbers and user name are required.' });
   }
 
   try {
+    // Parse selectedTickets from the query string into an array
+    const ticketNumbers = selectedTickets.split(',');
+
     // Query the database for tickets reserved by the user
     const reservedTickets = await Ticket.findAll({
       where: {
-        name: { [Op.eq]: firstName }, // Matches the user's name
-        phoneNumber: { [Op.eq]: phoneNumber }, // Matches the user's phone number
-        available: false, // Ensures only reserved tickets are fetched
+        ticket_number: { [Op.in]: ticketNumbers },
+        available: false, // Reserved tickets
+        name: firstName, // Associated with the user
       },
     });
 
@@ -169,18 +172,17 @@ app.get('/api/tickets/reserving', async (req, res) => {
       return res.status(404).json({ message: 'No reserved tickets found for the provided details.' });
     }
 
-    // Respond with only the ticket numbers
-    const reservedTicketNumbers = reservedTickets.map(ticket => ticket.ticket_number);
-
+    // Send the reserved tickets and a personalized message
     res.json({
-      message: 'Reserved tickets retrieved successfully',
-      reservedTicketNumbers,
+      message: `Hello ${firstName}, here are your reserved tickets!`,
+      reservedTickets,
     });
   } catch (err) {
     console.error('Error fetching reserved tickets:', err);
-    res.status(500).json({ message: 'Server error.' });
+    res.status(500).json({ message: 'Server error occurred while fetching reserved tickets.' });
   }
 });
+
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
