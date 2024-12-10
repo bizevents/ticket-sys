@@ -148,6 +148,31 @@ app.get('/api/tickets/reserved', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.post('/api/tickets/reserving', async (req, res) => {
+  const { name, phoneNumber } = req.body;
+
+  if (!name || !phoneNumber) {
+    return res.status(400).json({ message: 'Name and phone number are required.' });
+  }
+
+  try {
+    const [rows] = await db.query(
+      'SELECT * FROM Tickets WHERE name = ? AND phone_number = ? AND available = FALSE',
+      [name, phoneNumber]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No reserved tickets found for the provided details.' });
+    }
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
 });

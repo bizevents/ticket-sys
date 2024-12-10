@@ -61,41 +61,52 @@ const TicketGrid = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber) {
-      setErrorMessage("Please fill out all the fields.");
+  
+    if (!formData.firstName || !formData.phoneNumber) {
+      setErrorMessage("Please fill out the name and phone number fields.");
       return;
     }
-
+  
     try {
-      const response = await axios.post(
+      // Reserve tickets
+      await axios.post(
         "https://ticket-sys-server.vercel.app/api/tickets/reserve",
         {
           ticketIds: selectedTickets,
-          ...formData,
+          name: `${formData.firstName} ${formData.lastName}`,
+          phone_number: formData.phoneNumber,
+          email: formData.email,
         }
       );
-
-      // Once the tickets are reserved, we query for reserved tickets
-      const reservedResponse = await axios.get("https://ticket-sys-server.vercel.app/api/tickets/reserved");
-
-      // Redirect to the TicketGenerated page with reserved tickets
+  
+      // Fetch the user's reserved tickets
+      const reservedResponse = await axios.post(
+        "https://ticket-sys-server.vercel.app/api/tickets/reserving",
+        {
+          name: `${formData.firstName} ${formData.lastName}`,
+          phoneNumber: formData.phoneNumber,
+        }
+      );
+  
+      // Redirect to TicketGenerated page
       navigate("/ticket-generated", {
         state: {
           firstName: formData.firstName,
           reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
         },
       });
-
+  
+      // Reset state
       setSelectedTickets([]);
       setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
       setErrorMessage("");
-      setIsModalOpen(false); // Close the modal after successful reservation
+      setIsModalOpen(false);
     } catch (error) {
       console.error("Error reserving tickets:", error);
       setErrorMessage("An error occurred while reserving tickets.");
     }
   };
+  
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
