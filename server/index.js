@@ -149,23 +149,27 @@ app.get('/api/tickets/reserved', async (req, res) => {
   }
 });
 app.get('/api/tickets/reserving', async (req, res) => {
-  const { name, phoneNumber } = req.query; // Use query parameters instead of body
+  const { name, phoneNumber } = req.query;
 
   if (!name || !phoneNumber) {
     return res.status(400).json({ message: 'Name and phone number are required.' });
   }
 
   try {
-    const [rows] = await db.query(
-      'SELECT * FROM Tickets WHERE name = ? AND phone_number = ? AND available = FALSE',
-      [name, phoneNumber]
-    );
+    // Use Sequelize's query system with Op.eq for equality checks
+    const reservedTickets = await Ticket.findAll({
+      where: {
+        name: { [Op.eq]: name },
+        phone_number: { [Op.eq]: phoneNumber },
+        available: false
+      }
+    });
 
-    if (rows.length === 0) {
+    if (reservedTickets.length === 0) {
       return res.status(404).json({ message: 'No reserved tickets found for the provided details.' });
     }
 
-    res.json(rows);
+    res.json(reservedTickets);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error.' });
