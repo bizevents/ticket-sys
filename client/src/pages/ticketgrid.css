@@ -69,7 +69,7 @@ body {
   box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for aesthetics */
   padding: 10px 20px; /* Add some padding for better appearance */
   display: flex; /* Align content within the bar */
-  justify-content: space-between; /* Space out the text and button */
+  justify-content: space-around; /* Space out the text and button */
   align-items: center; /* Vertically center the content */
   z-index: 1000; /* Ensure it appears above other elements */
 }
