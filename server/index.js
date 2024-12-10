@@ -162,7 +162,7 @@ app.get('/api/tickets/reserving', async (req, res) => {
     const reservedTickets = await Ticket.findAll({
       where: {
         name: { [Op.eq]: name },
-        phone_number: { [Op.eq]: phone_number },
+        phoneNumber: { [Op.eq]: phoneNumber },
         available: false
       }
     });
