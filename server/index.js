@@ -159,11 +159,12 @@ app.get('/api/tickets/reserving', async (req, res) => {
     // Query the database for tickets reserved by the user
     const reservedTickets = await Ticket.findAll({
       where: {
-        name: { [Op.eq]: firstName, lastName}, // Matches the user's name
-        phoneNumber: { [Op.eq]: phoneNumber }, // Matches the user's phone number
+        name: { [Op.eq]: `${firstName} ${lastName}` }, // Concatenate first and last names
+        phoneNumber: { [Op.eq]: phoneNumber },        // Matches the user's phone number
         available: false, // Ensures only reserved tickets are fetched
       },
     });
+    
 
     if (reservedTickets.length === 0) {
       return res.status(404).json({ message: 'No reserved tickets found for the provided details.' });
