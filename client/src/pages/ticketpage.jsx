@@ -76,14 +76,14 @@ const TicketGrid = () => {
         }
       );
 
-      const fetchReservedTickets = async () => {
-        try {
-          const response = await axios.get("https://ticket-sys-server.vercel.app/api/tickets/reserving", {
-            params: {
-              selectedTickets: selectedTickets.join(','), // Send tickets as a comma-separated string
-              firstName: formData.firstName,
-            },
-          });
+      // Once the tickets are reserved, we query for reserved tickets
+      const reservedResponse = await axios.get("https://ticket-sys-server.vercel.app/api/tickets/reserving", {
+        params: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          phoneNumber: formData.phoneNumber,
+        },
+      });
       
       navigate("/ticket-generated", {
         state: {
