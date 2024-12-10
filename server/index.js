@@ -148,6 +148,20 @@ app.get('/api/tickets/reserved', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+app.get('/api/tickets/reserving', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM Tickets WHERE available = FALSE');
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'No reserved Tickets found' });
+    }
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
 });
