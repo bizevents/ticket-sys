@@ -61,16 +61,16 @@ const TicketGrid = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-  
+
     if (!formData.firstName || !formData.lastName || !formData.email || !formData.phoneNumber) {
       setErrorMessage("Please fill out all the fields.");
       return;
     }
-  
+
     try {
       // Combine firstName and lastName into a full name
       const fullName = `${formData.firstName} ${formData.lastName}`;
-  
+
       // Sending the combined name and phoneNumber to the backend
       const response = await axios.post(
         "https://ticket-sys-server.vercel.app/api/tickets/reserve",
@@ -81,30 +81,33 @@ const TicketGrid = () => {
           phoneNumber: formData.phoneNumber,
         }
       );
-  
-      // Once the tickets are reserved, we query for reserved tickets
+
+      // Query for reserved tickets after reserving them
       const reservedResponse = await axios.get(
         `https://ticket-sys-server.vercel.app/api/tickets/reserving?name=${fullName}&phoneNumber=${formData.phoneNumber}`
       );
-  
-      // Redirect to the TicketGenerated page with reserved tickets
-      navigate("/ticket-generated", {
-        state: {
-          firstName: formData.firstName,
-          reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
-        },
-      });
-  
-      setSelectedTickets([]);
-      setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
-      setErrorMessage("");
-      setIsModalOpen(false); // Close the modal after successful reservation
+
+      if (reservedResponse.data.length === 0) {
+        setErrorMessage("No reserved tickets found for the provided details.");
+      } else {
+        // Redirect to the TicketGenerated page with reserved tickets
+        navigate("/ticket-generated", {
+          state: {
+            firstName: formData.firstName,
+            reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
+          },
+        });
+
+        setSelectedTickets([]);
+        setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
+        setErrorMessage("");
+        setIsModalOpen(false); // Close the modal after successful reservation
+      }
     } catch (error) {
       console.error("Error reserving tickets:", error);
       setErrorMessage("An error occurred while reserving tickets.");
     }
   };
-  
 
   const handleFormChange = (e) => {
     const { name, value } = e.target;
