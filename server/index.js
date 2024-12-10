@@ -148,12 +148,13 @@ app.get('/api/tickets/reserved', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
-app.post('/api/tickets/reserving', async (req, res) => {
-  const { name, phoneNumber } = req.body;
+app.get('/api/tickets/reserving', async (req, res) => {
+  const { name, phoneNumber } = req.query; // Use query parameters instead of body
 
   if (!name || !phoneNumber) {
     return res.status(400).json({ message: 'Name and phone number are required.' });
   }
+
   try {
     const [rows] = await db.query(
       'SELECT * FROM Tickets WHERE name = ? AND phone_number = ? AND available = FALSE',
@@ -170,6 +171,7 @@ app.post('/api/tickets/reserving', async (req, res) => {
     res.status(500).json({ message: 'Server error.' });
   }
 });
+
 
 
 app.get('/api/health', (req, res) => {
