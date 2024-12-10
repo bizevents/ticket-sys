@@ -180,7 +180,7 @@ app.get('/api/tickets/reserving', async (req, res) => {
   } catch (err) {
     console.error('Error fetching reserved tickets:', err);
     res.status(500).json({ message: 'Server error.' });
-  }
+  }})
 
 app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
