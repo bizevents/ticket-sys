@@ -149,19 +149,39 @@ app.get('/api/tickets/reserved', async (req, res) => {
   }
 });
 app.get('/api/tickets/reserving', async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM Tickets WHERE available = FALSE');
+  const { firstName, phoneNumber } = req.query; // Extract user details from query parameters
 
-    if (rows.length === 0) {
-      return res.status(404).json({ message: 'No reserved Tickets found' });
+  if (!firstName || !phoneNumber) {
+    return res.status(400).json({ message: 'Name and phone number are required.' });
+  }
+
+  try {
+    // Query the database for tickets reserved by the user
+    const reservedTickets = await Ticket.findAll({
+      where: {
+        name: { [Op.eq]: firstName }, // Matches the user's name
+        phone_number: { [Op.eq]: phoneNumber }, // Matches the user's phone number
+        available: false, // Ensures only reserved tickets are fetched
+      },
+    });
+
+    if (reservedTickets.length === 0) {
+      return res.status(404).json({ message: 'No reserved tickets found for the provided details.' });
     }
 
-    res.json(rows);
+    // Respond with only the ticket numbers
+    const reservedTicketNumbers = reservedTickets.map(ticket => ticket.ticket_number);
+
+    res.json({
+      message: 'Reserved tickets retrieved successfully',
+      reservedTicketNumbers,
+    });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error fetching reserved tickets:', err);
+    res.status(500).json({ message: 'Server error.' });
   }
 });
+
 app.get('/api/health', (req, res) => {
   res.status(200).json({ message: 'Server is running smoothly' });
 });

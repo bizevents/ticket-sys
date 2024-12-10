@@ -77,37 +77,28 @@ const TicketGrid = () => {
       );
 
       // Once the tickets are reserved, we query for reserved tickets
-      /**
- * Fetch reserved tickets based on customer details
- */
-app.get('/api/tickets/reserving', async (req, res) => {
-  const { firstName, phoneNumber } = req.query; // Extract user details from query parameters
+      const reservedResponse = await axios.get("https://ticket-sys-server.vercel.app/api/tickets/reserving", {
+        params: {
+          firstName: formData.firstName,
+          phoneNumber: formData.phoneNumber,
+        },
+      });
+      
+      navigate("/ticket-generated", {
+        state: {
+          firstName: formData.firstName,
+          reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
+        },
+      });
+      
 
-  if (!firstName || !phoneNumber) {
-    return res.status(400).json({ message: 'Name and phone number are required.' });
-  }
-
-  try {
-    // Query the database for tickets reserved by the user
-    const reservedTickets = await Ticket.findAll({
-      where: {
-        name: { [Op.eq]: firstName },
-        phone_number: { [Op.eq]: phoneNumber },
-        available: false, // Reserved tickets
-      },
-    });
-
-    if (reservedTickets.length === 0) {
-      return res.status(404).json({ message: 'No reserved tickets found for the provided details.' });
-    }
-
-    res.json(reservedTickets); // Return reserved tickets to the front end
-  } catch (err) {
-    console.error('Error fetching reserved tickets:', err);
-    res.status(500).json({ message: 'Server error.' });
-  }
-});
-
+      // Redirect to the TicketGenerated page with reserved tickets
+      navigate("/ticket-generated", {
+        state: {
+          firstName: formData.firstName,
+          reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
+        },
+      });
 
       setSelectedTickets([]);
       setFormData({ firstName: "", lastName: "", email: "", phoneNumber: "" });
