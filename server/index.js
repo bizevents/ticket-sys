@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const db = require('./db/db');
 const { DataTypes } = require("sequelize"); // Ensure DataTypes is imported
 const Ticket = require('./models/Ticket');
+const { Op } = require('sequelize');
 
 const app = express();
 
@@ -148,6 +149,7 @@ app.get('/api/tickets/reserved', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
 app.get('/api/tickets/reserving', async (req, res) => {
   const { name, phoneNumber } = req.query;
 
