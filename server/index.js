@@ -160,7 +160,7 @@ app.get('/api/tickets/reserving', async (req, res) => {
     const reservedTickets = await Ticket.findAll({
       where: {
         name: { [Op.eq]: firstName }, // Matches the user's name
-        phone_number: { [Op.eq]: phoneNumber }, // Matches the user's phone number
+        phoneNumber: { [Op.eq]: phoneNumber }, // Matches the user's phone number
         available: false, // Ensures only reserved tickets are fetched
       },
     });
