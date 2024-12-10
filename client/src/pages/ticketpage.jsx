@@ -78,7 +78,7 @@ const TicketGrid = () => {
 
       // Once the tickets are reserved, we query for reserved tickets
       const reservedResponse = await axios.get(
-        `https://ticket-sys-server.vercel.app/api/tickets/reserving?name=${formData.firstName}&phoneNumber=${formData.phoneNumber}`);;
+        `https://ticket-sys-server.vercel.app/api/tickets/reserving`);;
 
       // Redirect to the TicketGenerated page with reserved tickets
       navigate("/ticket-generated", {
