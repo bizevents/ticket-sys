@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const db = require('./db/db');
 const { DataTypes,Op } = require("sequelize"); 
 const Ticket = require('./models/Ticket');
+const sendBulkSMS = require('./SMS/sendBulkSMS')
 
 const app = express();
 
@@ -97,6 +98,10 @@ app.post('/api/tickets/reserve', async (req, res) => {
         where: { ticketId: ticketIds },
       }
     );
+    const message = `Dear ${firstName}, your tickets have been reserved successfully.`;
+    const recipients = [phoneNumber];
+
+    await sendBulkSMS(recipients, message);
 
 
     res.json({ message: 'Tickets reserved successfully!' });
