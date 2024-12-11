@@ -31,6 +31,9 @@ const TicketGrid = () => {
       try {
         const response = await axios.get("https://ticket-sys-server.vercel.app/api/tickets");
 
+        //console logging the array
+        console.log(response.data)
+
         if (response.data.message) {
           setErrorMessage(response.data.message);
         } else if (Array.isArray(response.data)) {
