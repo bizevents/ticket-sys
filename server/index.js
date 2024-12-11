@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
 const db = require('./db/db');
-const { DataTypes,Op } = require("sequelize"); d
+const { DataTypes,Op } = require("sequelize"); 
 const Ticket = require('./models/Ticket');
 
 const app = express();
