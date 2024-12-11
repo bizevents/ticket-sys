@@ -52,7 +52,7 @@ app.post("/api/tickets/generate", async (req, res) => {
  */
 app.get('/api/tickets', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT ticket_number, available FROM Tickets WHERE available = TRUE');
+    const [rows] = await db.query('SELECT ticketId,ticket_number, available FROM Tickets WHERE available = TRUE');
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'No available tickets found' });
