@@ -9,7 +9,7 @@ const TicketGrid = () => {
 
   const [tickets, setTickets] = useState([]);
   const [selectedTickets, setSelectedTickets] = useState([]);
-  const [ticketCount, setTicketCount] = useState(5); // Default value if no count in URL
+  const [ticketCount, setTicketCount] = useState(1); // Default value if no count in URL
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",

@@ -5,7 +5,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import './Ticketsystem.css'; // Import the CSS file
 
 const TicketSystem = () => {
-  const [ticketCount, setTicketCount] = useState(0);
+  const [ticketCount, setTicketCount] = useState(1);
   const [uniqueLink, setUniqueLink] = useState('');
 
   const handleTicketCountChange = (event) => {
@@ -45,7 +45,7 @@ const TicketSystem = () => {
         </button>
       </div>
       {uniqueLink && (
-        <div className="qr-container" style={{display:'block'}}>
+        <div className="qr-container" style={{display:'flex', flexDirection:'column'}}>
           <p className="qr-text">Here is your unique session QR Code:</p>
           <QRCodeCanvas value={uniqueLink} size={256} level="H" className="qr-code" />
           <button><Link to={uniqueLink}>continue here</Link></button>
