@@ -2,13 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const crypto = require("crypto");
 const db = require('./db/db');
-const { DataTypes,Op } = require("sequelize"); // Ensure DataTypes is imported
+const { DataTypes,Op } = require("sequelize"); d
 const Ticket = require('./models/Ticket');
 
 const app = express();
 
 app.use(cors({
-  origin: "https://ticket-sys-client.vercel.app", // Allow all origins, or specify a specific domain, e.g., "https://your-frontend-domain.com"
+  origin: "https://ticket-sys-client.vercel.app", 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['X-CSRF-Token', 'X-Requested-With', 'Accept', 'Content-Type', 'Authorization'],
   credentials: true,  // If you need to send credentials like cookies
@@ -51,7 +51,7 @@ app.post("/api/tickets/generate", async (req, res) => {
  */
 app.get('/api/tickets', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM Tickets WHERE available = TRUE');
+    const [rows] = await db.query('SELECT ticket_number, available FROM Tickets WHERE available = TRUE');
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'No available tickets found' });
@@ -136,7 +136,7 @@ app.post('/api/tickets/validate', async (req, res) => {
 });
 app.get('/api/tickets/reserved', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM Tickets WHERE available = FALSE');
+    const [rows] = await db.query('SELECT ticket_number,name FROM Tickets WHERE available = FALSE');
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'No reserved Tickets found' });
