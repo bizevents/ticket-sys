@@ -4,7 +4,7 @@ const crypto = require("crypto");
 const db = require('./db/db');
 const { DataTypes,Op } = require("sequelize"); 
 const Ticket = require('./models/Ticket');
-const sendBulkSMS = require('./SMS/sendBulkSMS')
+const sendBulkSMS = require('../SMS/sendBulkSMS')
 
 const app = express();
 
