@@ -108,9 +108,6 @@ app.post('/api/tickets/reserve', async (req, res) => {
         where: { ticketId: ticketIds },
       }
     );
-   
-
-    await sendBulkSMS(recipients, message);
 
 
     res.json({ message: 'Tickets reserved successfully!' });
