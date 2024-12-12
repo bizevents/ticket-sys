@@ -11,8 +11,8 @@ const app = express();
 app.use(bodyParser.json())
 
 const africasTalking = africastalking({
-  apiKey: process.env.API_KEY,
-  username: process.env.USERNAME
+  apiKey: process.env.AT_API_KEY,
+  username: process.env.AT_USERNAME
 });
 
 
