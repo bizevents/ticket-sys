@@ -98,6 +98,7 @@ const TicketGrid = () => {
           state: {
             firstName: formData.firstName,
             reservedTicketNumbers: reservedResponse.data.map(ticket => ticket.ticket_number),
+            phoneNumber:formData.phoneNumber
           },
         });
       } else {
