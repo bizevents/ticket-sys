@@ -147,7 +147,7 @@ app.post('/api/tickets/validate', async (req, res) => {
 });
 app.get('/api/tickets/reserved', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT ticket_number,name FROM Tickets WHERE available = FALSE');
+    const [rows] = await db.query('SELECT ticket_number,name,phone_number FROM Tickets WHERE available = FALSE');
 
     if (rows.length === 0) {
       return res.status(404).json({ message: 'No reserved Tickets found' });
