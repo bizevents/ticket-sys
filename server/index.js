@@ -8,7 +8,7 @@ require("dotenv").config();
 const africastalking = require("africastalking");
 
 const app = express();
-app.use(bodyParser.json())
+app.use(express.json()); 
 
 const africasTalking = africastalking({
   apiKey: process.env.AT_API_KEY,
