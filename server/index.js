@@ -4,9 +4,19 @@ const crypto = require("crypto");
 const db = require('./db/db');
 const { DataTypes,Op } = require("sequelize"); 
 const Ticket = require('./models/Ticket');
-const sendBulkSMS = require('../SMS/sendBulkSMS')
+require("dotenv").config();
+const africastalking = require("africastalking");
 
 const app = express();
+app.use(bodyParser.json())
+
+const africasTalking = africastalking({
+  apiKey: process.env.API_KEY,
+  username: process.env.USERNAME
+});
+
+
+
 
 app.use(cors({
   origin: "https://ticket-sys-client.vercel.app", 
@@ -98,8 +108,7 @@ app.post('/api/tickets/reserve', async (req, res) => {
         where: { ticketId: ticketIds },
       }
     );
-    const message = `Dear ${firstName}, your tickets have been reserved successfully.`;
-    const recipients = [phoneNumber];
+   
 
     await sendBulkSMS(recipients, message);
 
@@ -153,6 +162,35 @@ app.get('/api/tickets/reserved', async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+const sms = africasTalking.SMS;
+
+app.post("api/tickets/send-sms", async (req, res) => {
+  const { phoneNumber, message } = req.body;
+
+  if (!phoneNumber || !message) {
+      return res.status(400).json({ error: "Phone number and message are required" });
+  }
+
+  try {
+      const response = await sms.send({
+          to: phoneNumber,
+          message: message,
+      });
+
+      res.status(200).json({
+          success: true,
+          message: "SMS sent successfully",
+          data: response,
+      });
+  } catch (error) {
+      console.error("Error sending SMS:", error);
+      res.status(500).json({ success: false, error: "Failed to send SMS" });
+  }
+});
+
+
+
 app.get('/api/tickets/reserving', async (req, res) => {
   const { firstName,lastName, phoneNumber } = req.query; // Extract user details from query parameters
 

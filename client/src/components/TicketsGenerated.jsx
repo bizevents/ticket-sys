@@ -1,18 +1,23 @@
 import { useLocation } from "react-router-dom";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import axios from "axios";
 import './ticketgenerated.css';
 
 const TicketGenerated = () => {
   const location = useLocation();
-  const { firstName, reservedTicketNumbers } = location.state || {};
-  
+  const { firstName, reservedTicketNumbers, phoneNumber } = location.state || {};
+
   // Canvas ref for image generation
   const canvasRef = useRef(null);
+
+  // State for SMS status and loading
+  const [smsStatus, setSmsStatus] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleDownload = () => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    
+
     // Set up canvas size
     canvas.width = 800;
     canvas.height = 600;
@@ -41,6 +46,34 @@ const TicketGenerated = () => {
     link.click();
   };
 
+  const handleSendSms = async () => {
+    if (!phoneNumber) {
+      setSmsStatus("Phone number is missing. Cannot send SMS.");
+      return;
+    }
+
+    setLoading(true);
+    setSmsStatus("");
+
+    try {
+      const response = await axios.post("https://https://ticket-sys-client.vercel.app/api/tickets/send-sms", {
+        phoneNumber,
+        message: `Hello ${firstName}, your reserved tickets: ${reservedTicketNumbers.join(", ")}`
+      });
+
+      if (response.data.success) {
+        setSmsStatus("SMS sent successfully!");
+      } else {
+        setSmsStatus("Failed to send SMS. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending SMS:", error);
+      setSmsStatus("An error occurred while sending the SMS.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="ticket-generated-container">
       <div className="ticket-header">
@@ -55,7 +88,15 @@ const TicketGenerated = () => {
           ))}
         </ul>
       </div>
-      <button className="download-button" onClick={handleDownload}>Download Tickets as PNG</button>
+
+      <div className="button-group">
+        <button className="download-button" onClick={handleDownload}>Download Tickets as PNG</button>
+        <button className="sms-button" onClick={handleSendSms} disabled={loading}>
+          {loading ? "Sending SMS..." : "Send Tickets via SMS"}
+        </button>
+      </div>
+
+      {smsStatus && <p className="sms-status">{smsStatus}</p>}
 
       {/* Hidden canvas element */}
       <canvas ref={canvasRef} style={{ display: "none" }} />
