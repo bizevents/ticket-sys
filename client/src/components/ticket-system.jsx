@@ -28,7 +28,7 @@ const TicketSystem = () => {
 
   return (
     <div className="ticket-system-container">
-      <h1 className="header">BIZ BAZ RAFFLE </h1>
+      <h1 className="header">BIZ BAZ Draw </h1>
       <div className="form-container">
         <label htmlFor="ticketCount" className="label">
           Number of Tickets:

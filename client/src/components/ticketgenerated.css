@@ -91,4 +91,7 @@
     margin-bottom: 1.5rem;
     font-size: 1rem;
   }
-  
+  .button-group button{
+    padding: 10px;
+    
+  }
