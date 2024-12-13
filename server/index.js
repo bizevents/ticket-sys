@@ -162,7 +162,7 @@ app.get('/api/tickets/reserved', async (req, res) => {
 
 const sms = africasTalking.SMS;
 
-app.post("api/tickets/send-sms", async (req, res) => {
+app.post("/api/tickets/send-sms", async (req, res) => {
   const { phoneNumber, message } = req.body;
 
   if (!phoneNumber || !message) {
