@@ -91,7 +91,7 @@ const TicketGenerated = () => {
 
       <div className="button-group">
         <button className="download-button" onClick={handleDownload}>Download Tickets as PNG</button>
-        <button className="sms-button" onClick={handleSendSms} disabled={loading} >
+        <button className="sms-button" onClick={handleSendSms} disabled={loading}  style={{display:'none'}}>
           {loading ? "Sending SMS..." : "Send Tickets via SMS"}
         </button>
       </div>
