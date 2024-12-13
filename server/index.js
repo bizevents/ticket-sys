@@ -165,9 +165,13 @@ const sms = africasTalking.SMS;
 app.post("/api/tickets/send-sms", async (req, res) => {
   const { phoneNumber, message } = req.body;
 
+  // Validate input
   if (!phoneNumber || !message) {
+      console.error("Validation error: Phone number or message missing");
       return res.status(400).json({ error: "Phone number and message are required" });
   }
+
+  console.log("Received SMS request:", { phoneNumber, message });
 
   try {
       const response = await sms.send({
@@ -175,14 +179,30 @@ app.post("/api/tickets/send-sms", async (req, res) => {
           message: message,
       });
 
-      res.status(200).json({
-          success: true,
-          message: "SMS sent successfully",
-          data: response,
-      });
+      // Log the response from Africa's Talking
+      console.log("Africa's Talking Response:", JSON.stringify(response, null, 2));
+
+      // Check if the message was successfully sent
+      const { SMSMessageData } = response;
+      if (SMSMessageData && SMSMessageData.Message.includes("Sent")) {
+          console.log("SMS sent successfully:", SMSMessageData);
+          return res.status(200).json({
+              success: true,
+              message: "SMS sent successfully",
+              data: SMSMessageData,
+          });
+      } else {
+          console.error("SMS failed to send:", SMSMessageData);
+          return res.status(500).json({
+              success: false,
+              message: "Failed to send SMS",
+              data: SMSMessageData,
+          });
+      }
   } catch (error) {
-      console.error("Error sending SMS:", error);
-      res.status(500).json({ success: false, error: "Failed to send SMS" });
+      // Log the error details
+      console.error("Error sending SMS:", error.message, error.stack);
+      return res.status(500).json({ success: false, error: "Failed to send SMS" });
   }
 });
 
