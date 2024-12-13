@@ -56,7 +56,7 @@ const TicketGenerated = () => {
     setSmsStatus("");
 
     try {
-      const response = await axios.post("https://https://ticket-sys-server.vercel.app/api/tickets/send-sms", {
+      const response = await axios.post("https://ticket-sys-server.vercel.app/api/tickets/send-sms", {
         phoneNumber,
         message: `Hello ${firstName}, your reserved tickets: ${reservedTicketNumbers.join(", ")}`
       });
