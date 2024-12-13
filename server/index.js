@@ -177,7 +177,6 @@ app.post("/api/tickets/send-sms", async (req, res) => {
       const response = await sms.send({
           to: phoneNumber,
           message: message,
-          from:AFRICASTKNG
       });
 
       // Log the response from Africa's Talking
